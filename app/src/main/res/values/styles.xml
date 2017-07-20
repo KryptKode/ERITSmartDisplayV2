@@ -24,5 +24,10 @@
         <item name="android:contentDescription">@string/add</item>
     </style>
 
-    <string name="add">Add</string>
+    <style name="MyTheme.Splash" parent ="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
 </resources>
