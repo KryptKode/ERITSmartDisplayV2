@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Erit Smart Display</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="www_erit_com_ng">www.erit.com.ng</string>
+    <string name="electrohyve_research_institute_of_technology">Electrohyve Research Institute of Technology</string>
+    <string name="home">Home</string>
+    <string name="about">About</string>
+    <string name="settings">Settings</string>
+    <string name="communicate">Communicate</string>
+    <string name="share">Share</string>
+    <string name="action_resturant">Eatery</string>
+    <string name="action_filling_station">Filling Station</string>
+    <string name="action_custom">Custom Display</string>
+</resources>
