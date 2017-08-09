@@ -17,4 +17,9 @@
     <string name="action_custom">Custom Display</string>
     <string name="erit_logo">Erit Logo</string>
     <string name="add">Add</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="overflow_menu_for_display">Overflow menu for the current display</string>
+    <string name="display_avatar">Display Avatar</string>
 </resources>

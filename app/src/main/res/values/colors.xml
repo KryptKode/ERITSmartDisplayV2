@@ -5,4 +5,5 @@
     <color name="colorAccent">#112840</color>
     <color name="labelColor">#CF4d0404</color>
     <color name="black">#99000000</color>
+    <color name="frame_layout_child_background">#A3000000</color>
 </resources>
