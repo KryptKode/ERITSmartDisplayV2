@@ -1,6 +1,10 @@
 package com.kryptkode.cyberman.eritsmartdisplay.models;
 
+import android.database.Cursor;
 import android.os.Parcel;
+
+import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract;
+import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract.SmartDisplayColumns;
 
 /**
  * Created by Cyberman on 8/9/2017.
@@ -10,8 +14,18 @@ public class MessageBoard extends SmartDisplay {
     private String messageString;
     private MessageBoardType messageBoardType;
 
-    public MessageBoard(String name, String ipAddress) {
-        super(name, ipAddress);
+    public MessageBoard(long id, String name, String ipAddress, String messageString, MessageBoardType messageBoardType) {
+        super(id, name, ipAddress);
+        this.messageString = messageString;
+        this.messageBoardType = messageBoardType;
+    }
+
+    public MessageBoard(Cursor cursor) throws Exception {
+        super(cursor);
+        this.messageString = SmartDisplayContract.getColumnString(cursor, SmartDisplayColumns.COLUMN_MESSAGE_STRING);
+        String boardType = SmartDisplayContract.getColumnString(cursor, SmartDisplayColumns.COLUMN_BOARD_TYPE);
+        int num = Integer.parseInt(boardType.split("-")[0]);
+        this.messageBoardType = getMessageBoardTypeFromInt(num);
     }
 
     public String getMessageString() {
@@ -20,6 +34,31 @@ public class MessageBoard extends SmartDisplay {
 
     public void setMessageString(String messageString) {
         this.messageString = messageString;
+    }
+    public MessageBoardType getMessageBoardTypeFromInt(int code) throws Exception {
+        switch (code){
+            case (2):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_TWO;
+            case (3):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_THREE;
+            case (4):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_FOUR;
+            case (5):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_FIVE;
+
+            case (6):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_SIX;
+            case (7):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_SEVEN;
+            case (8):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_EIGHT;
+            case (9):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_NINE;
+            case (10):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_TEN;
+            default:
+                throw new Exception("Integer" + code + "is not associated with any Message board type");
+        }
     }
 
     public MessageBoardType getMessageBoardType() {
@@ -69,6 +108,19 @@ public class MessageBoard extends SmartDisplay {
         this.messageString = in.readString();
         int tmpMessageBoardType = in.readInt();
         this.messageBoardType = tmpMessageBoardType == -1 ? null : MessageBoardType.values()[tmpMessageBoardType];
+    }
+
+
+    public long getMessageId() {
+        return super.getId();
+    }
+
+    public String getMessageIpAddress() {
+        return super.getIpAddress();
+    }
+
+    public String getMessageName() {
+        return super.getName();
     }
 
 }

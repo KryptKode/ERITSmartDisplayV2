@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="@dimen/home_list_item_height"
     android:layout_margin="8dp"
     android:elevation="@dimen/cardview_default_elevation"
-    app:cardCornerRadius="@dimen/cardview_default_radius"
-    android:layout_height="@dimen/home_list_item_height"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    app:cardCornerRadius="@dimen/cardview_default_radius">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,12 +16,13 @@
 
 
         <ImageView
+            android:id="@+id/display_imageView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_gravity="center"
             android:layout_weight="1"
-            app:srcCompat="@drawable/ic_desktop_windows_black_72dp"
-            android:contentDescription="@string/display_avatar" />
+            android:contentDescription="@string/display_avatar"
+            app:srcCompat="@drawable/ic_desktop_windows_black_72dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
