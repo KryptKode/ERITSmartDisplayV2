@@ -22,22 +22,30 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
-
         </activity>
-
-        <activity android:name=".SplashScreen"
+        <activity
+            android:name=".SplashScreen"
             android:theme="@style/MyTheme.Splash">
             <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-        </activity>
-        
-        <provider
-            android:authorities="com.kryptkode.cyberman.eritsmartdisplay.data"
-            android:name=".data.SmartDisplayContentProvider"
-            android:exported="false"/>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name=".data.SmartDisplayContentProvider"
+            android:authorities="com.kryptkode.cyberman.eritsmartdisplay.data"
+            android:exported="false" />
+
+        <activity
+            android:name=".AddNewDisplayActivity"
+            android:label="@string/title_activity_add_new_display"
+            android:parentActivityName=".EritSmartDisplayActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.kryptkode.cyberman.eritsmartdisplay.EritSmartDisplayActivity" />
+        </activity>
     </application>
 
 </manifest>
