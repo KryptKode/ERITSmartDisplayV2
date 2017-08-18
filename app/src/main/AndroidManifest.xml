@@ -46,6 +46,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.kryptkode.cyberman.eritsmartdisplay.EritSmartDisplayActivity" />
         </activity>
+        <service android:name=".SmartDisplayService" />
     </application>
 
 </manifest>

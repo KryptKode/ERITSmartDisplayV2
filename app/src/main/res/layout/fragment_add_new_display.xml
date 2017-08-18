@@ -1,49 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.kryptkode.cyberman.eritsmartdisplay.AddNewDisplayActivityFragment"
     tools:showIn="@layout/activity_add_new_display">
 
-    <android.support.design.widget.TextInputLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/edit_text_margin"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
         >
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/add_boardName_et"
+
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textCapWords"
-            android:hint="@string/what_do_you_want_to_call_this_board"/>
+            android:layout_margin="@dimen/edit_text_margin"
+            >
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/add_boardName_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:hint="@string/what_do_you_want_to_call_this_board"/>
 
-    </android.support.design.widget.TextInputLayout>
+        </android.support.design.widget.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/edit_text_margin"
-        >
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/add_ip_et"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:hint="@string/board_ip_prompt"/>
+            android:layout_margin="@dimen/edit_text_margin"
+            >
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/add_ip_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:hint="@string/board_ip_prompt"/>
 
-    </android.support.design.widget.TextInputLayout>
+        </android.support.design.widget.TextInputLayout>
 
-    <android.support.v7.widget.AppCompatSpinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
 
-    <android.support.v7.widget.AppCompatSpinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
 
-</LinearLayout>
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/message_board_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:entries="@array/message_board_types"
+            />
+       <android.support.v7.widget.AppCompatImageView
+           android:id="@+id/add_message_board_image"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           app:srcCompat="@drawable/erit_logo"
+           />
+
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/price_board_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:entries="@array/price_board_types"
+            />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/add_price_board_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/erit_logo"
+            />
+
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

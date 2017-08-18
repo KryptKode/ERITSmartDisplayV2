@@ -15,8 +15,6 @@ import android.widget.TextView;
 import com.kryptkode.cyberman.eritsmartdisplay.R;
 import com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoard;
 
-import java.util.ArrayList;
-
 /**
  * Created by Cyberman on 8/9/2017.
  */
@@ -80,7 +78,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
     public interface HomeAdapterListener {
         void onDisplayClicked(int position);
 
-        void onDisplayOverflowClicked(int position);
+        void onDisplayOverflowClicked(int position, View view);
     }
 
     public void setHomeAdapterListener(HomeAdapterListener homeAdapterListener) {
@@ -105,7 +103,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         @Override
         public void onClick(View v) {
             if (v == displayOverflowButton) {
-                homeAdapterListener.onDisplayOverflowClicked(getAdapterPosition());
+                homeAdapterListener.onDisplayOverflowClicked(getAdapterPosition(), v);
             } else {
                 homeAdapterListener.onDisplayClicked(getAdapterPosition());
             }

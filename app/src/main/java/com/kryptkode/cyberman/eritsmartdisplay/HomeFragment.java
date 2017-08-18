@@ -2,6 +2,7 @@ package com.kryptkode.cyberman.eritsmartdisplay;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,12 +10,14 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.kryptkode.cyberman.eritsmartdisplay.adapters.HomeAdapter;
 import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract;
@@ -96,8 +99,32 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
 
     /*Methods for the adapter listener*/
     @Override
-    public void onDisplayOverflowClicked(int position) {
+    public void onDisplayOverflowClicked(int position, View view) {
         //TODO Create Contextual Menu
+
+        PopupMenu popupMenu = new PopupMenu(getContext(), view );
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int id = item.getItemId();
+                switch (id){
+                    case R.id.action_edit:
+                        Intent intent = new Intent(getContext(), AddNewDisplayActivity.class);
+                        startActivity(intent);
+                        return true;
+
+                    case R.id.action_delete:
+                        Toast.makeText(getContext(), "Delete", Toast.LENGTH_LONG).show();
+                        return true;
+                    default:
+                        return false;
+
+                }
+            }
+        });
+
+        popupMenu.inflate(R.menu.menu_home_item);
+        popupMenu.show();
     }
 
     @Override
