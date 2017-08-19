@@ -22,4 +22,8 @@ public class AddNewDisplayHelper {
             }
         }
     }
+
+    public  static void saveItems(){
+
+    }
 }

@@ -22,6 +22,15 @@ public class SmartDisplay implements Parcelable {
         this.ipAddress = ipAddress;
     }
 
+    public SmartDisplay( String name, String ipAddress) {
+        this.name = name;
+        this.ipAddress = ipAddress;
+    }
+
+    public SmartDisplay(){
+        //empty constructor
+    }
+
 
     public SmartDisplay(Cursor cursor){
         this.id = SmartDisplayContract.getColumnLong(cursor, SmartDisplayColumns._ID);

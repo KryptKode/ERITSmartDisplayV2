@@ -20,6 +20,15 @@ public class MessageBoard extends SmartDisplay {
         this.messageBoardType = messageBoardType;
     }
 
+    public MessageBoard( String name, String ipAddress, MessageBoardType messageBoardType) {
+        super( name, ipAddress);
+        this.messageBoardType = messageBoardType;
+    }
+
+    public MessageBoard(){
+
+    }
+
     public MessageBoard(Cursor cursor) throws Exception {
         super(cursor);
         this.messageString = SmartDisplayContract.getColumnString(cursor, SmartDisplayColumns.COLUMN_MESSAGE_STRING);
@@ -35,7 +44,7 @@ public class MessageBoard extends SmartDisplay {
     public void setMessageString(String messageString) {
         this.messageString = messageString;
     }
-    public MessageBoardType getMessageBoardTypeFromInt(int code) throws Exception {
+    public static MessageBoardType getMessageBoardTypeFromInt(int code) throws Exception {
         switch (code){
             case (2):
                 return MessageBoardType.MESSAGE_BOARD_TYPE_TWO;

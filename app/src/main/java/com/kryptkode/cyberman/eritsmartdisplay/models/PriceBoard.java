@@ -21,6 +21,15 @@ public class PriceBoard extends MessageBoard {
         this.priceBoardType = priceBoardType;
     }
 
+    public PriceBoard( String name, String ipAddress,  MessageBoardType messageBoardType,  PriceBoardType priceBoardType) {
+        super( name, ipAddress, messageBoardType);
+        this.priceBoardType = priceBoardType;
+    }
+
+    public PriceBoard(){
+
+    }
+
     public PriceBoard(Cursor cursor) throws Exception {
         super(cursor);
 
@@ -30,7 +39,7 @@ public class PriceBoard extends MessageBoard {
         this.priceBoardType = getPriceBoardTypeFromInt(num);
     }
 
-    public PriceBoardType getPriceBoardTypeFromInt(int code) throws Exception {
+    public static PriceBoardType getPriceBoardTypeFromInt(int code) throws Exception {
         switch (code){
             case (1):
                 return PriceBoardType.PRICE_BOARD_TYPE_ONE;

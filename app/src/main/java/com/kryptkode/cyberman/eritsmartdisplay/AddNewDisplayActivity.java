@@ -26,21 +26,5 @@ public class AddNewDisplayActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_add_new_display, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId  = item.getItemId();
-        switch (itemId){
-            case R.id.action_save:
-
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 }
