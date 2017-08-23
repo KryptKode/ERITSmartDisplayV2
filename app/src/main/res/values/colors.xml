@@ -2,8 +2,9 @@
 <resources>
     <color name="colorPrimary">#067a06</color>
     <color name="colorPrimaryDark">#045504</color>
-    <color name="colorAccent">#112840</color>
+    <color name="colorAccent">#ff4070 </color>
     <color name="labelColor">#CF4d0404</color>
     <color name="black">#99000000</color>
+    <color name="oldAccent">#112840</color>
     <color name="frame_layout_child_background">#A3000000</color>
 </resources>

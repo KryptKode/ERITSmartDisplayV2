@@ -7,4 +7,6 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="home_list_item_height">180dp</dimen>
     <dimen name="edit_text_margin">8dp</dimen>
+    <dimen name="add_display_spinner_margin">16dp</dimen>
+    <dimen name="message_spinner_margin">16dp</dimen>
 </resources>

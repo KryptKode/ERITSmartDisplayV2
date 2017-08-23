@@ -131,7 +131,7 @@ public class AddNewDisplayActivityFragment extends Fragment implements AdapterVi
 
     private void saveEntries() {
         String priceTypeString = priceBoardType != null ?
-                String.valueOf(priceBoardType.getNumberOfCascades()) : "";
+                String.valueOf(priceBoardType.getNumberOfCascades()) : "4";
         String messageTypeString = messageBoardType != null ?
                 String.valueOf(messageBoardType.getNumberOfCascades()): "";
 

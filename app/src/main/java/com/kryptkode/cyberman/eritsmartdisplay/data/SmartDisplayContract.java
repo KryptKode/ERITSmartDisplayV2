@@ -27,7 +27,7 @@ public class SmartDisplayContract {
         public static final String COLUMN_PRICE_BOARD_STRING = "price_string";
 
         public static Uri buildDisplayUri(long id) {
-           return ContentUris.withAppendedId(BASE_URI, id);
+           return ContentUris.withAppendedId(DISPLAY_CONTENT_URI, id);
         }
     }
 

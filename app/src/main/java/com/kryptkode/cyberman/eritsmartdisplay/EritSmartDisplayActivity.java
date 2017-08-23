@@ -1,24 +1,28 @@
 package com.kryptkode.cyberman.eritsmartdisplay;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.view.View;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 
 public class EritSmartDisplayActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener ,HomeFragment.HomeFragmentListener{
+        implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.HomeFragmentListener {
+
+    public static final String POSITION_KEY = "position";
+    public static final String FRAG_TAG = "frag";
+    private int currentPosition;
+    private DrawerLayout drawer;
+    private ActionBarDrawerToggle toggle;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,59 +35,60 @@ public class EritSmartDisplayActivity extends AppCompatActivity
         //display the home fragment
         HomeFragment homeFragment = HomeFragment.getInstance();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.home_root, homeFragment, null );
+        transaction.add(R.id.home_root, homeFragment, null);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.commit();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
-        toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (savedInstanceState != null) {
+            currentPosition = savedInstanceState.getInt(POSITION_KEY);
+            setActionBarTitle(currentPosition);
+            selectItem(currentPosition);
+        }
+
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            if (fragmentManager.getBackStackEntryCount() > 0) {
+                super.onBackPressed();
+
+                Fragment fragment = fragmentManager.findFragmentByTag(FRAG_TAG);
+                if (fragment instanceof HomeFragment) {
+                    currentPosition = 0;
+                } else if (fragment instanceof SettingsFragment) {
+                    currentPosition = 1;
+                } /*else if (fragment instanceof AboutFragment) {
+                    currentPosition = 2;
+                }*/
+                setActionBarTitle(currentPosition);
+                navigationView.getMenu().getItem(currentPosition).setChecked(true);
+
+            }
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.erit_smart_display, menu);
-        return true;
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        toggle.syncState();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        Intent intent = new Intent (this, AddNewDisplayActivity.class);
-        if (id == R.id.action_add_filling_station_display) {
-            intent.putExtra(AddNewDisplayActivity.EXTRA_INT, 1);
-            startActivity(intent);
-            return true;
-        }else
-
-        if (id == R.id.action_add_resturant_display) {
-            intent.putExtra(AddNewDisplayActivity.EXTRA_INT, 2);
-            startActivity(intent);
-            return true;
-        }else
-        if (id == R.id.action_add_custom_display) {
-            intent.putExtra(AddNewDisplayActivity.EXTRA_INT, 3);
-            startActivity(intent);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(POSITION_KEY, currentPosition);
+        super.onSaveInstanceState(outState);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -93,30 +98,77 @@ public class EritSmartDisplayActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            //display the home fragment
-            HomeFragment homeFragment = HomeFragment.getInstance();
-            displayFragment(homeFragment);
+            selectItem(0);
 
         } else if (id == R.id.nav_setting) {
-            SettingsFragment settingsFragment = new SettingsFragment();
-            displayFragment(settingsFragment);
+            selectItem(1);
 
         } else if (id == R.id.nav_about) {
+            selectItem(2);
 
         } else if (id == R.id.nav_share) {
-
+            selectItem(3);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    private  void displayFragment(Fragment fragment){
+
+    private void displayFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.home_root, fragment, null );
+        transaction.replace(R.id.home_root, fragment, FRAG_TAG);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.addToBackStack(null);
         transaction.commit();
     }
+
+    private void selectItem(int position) {
+// update the main content by replacing fragments
+        currentPosition = position;
+        Fragment fragment;
+        switch (position) {
+            case 0:
+                fragment = HomeFragment.getInstance();
+                break;
+            case 1:
+                fragment = new SettingsFragment();
+                break;
+            case 2:
+                fragment = new SettingsFragment();
+                break;
+            default:
+                fragment = HomeFragment.getInstance();
+
+        }
+        displayFragment(fragment);
+//Set the action bar title
+        setActionBarTitle(position);
+//Close the drawer
+        drawer.closeDrawer(GravityCompat.START);
+    }
+
+    private void setActionBarTitle(int position) {
+        String title;
+        switch (position) {
+            case 0:
+                title = getString(R.string.app_name);
+                break;
+            case 1:
+                title = getString(R.string.action_settings);
+                break;
+            case 2:
+                title = getString(R.string.about);
+                break;
+            default:
+                title = getString(R.string.app_name);
+        }
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+        }
+
+    }
+
+
 }

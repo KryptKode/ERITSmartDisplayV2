@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/home_list_item_height"
+    android:background="@drawable/background_state"
     android:layout_margin="8dp"
     android:orientation="vertical"
     app:cardCornerRadius="@dimen/cardview_default_radius">
@@ -43,6 +44,7 @@
                 android:id="@+id/display_overflow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="4dp"
                 android:background="@drawable/background_state"
                 android:contentDescription="@string/overflow_menu_for_display"
                 app:srcCompat="@drawable/ic_more_vert_black_24dp" />

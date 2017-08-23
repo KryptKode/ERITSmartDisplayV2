@@ -44,10 +44,12 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         Log.i(TAG, String.valueOf("onBindViewHolder: " + (priceBoard == null)));
         //set the display name to the name if the user entered it, else, use the IP
         if (priceBoard != null) {
-            if (priceBoard.getPriceName() != null || TextUtils.isEmpty(priceBoard.getName())) {
+            if (priceBoard.getPriceName() != null || !TextUtils.isEmpty(priceBoard.getName())) {
                 displayName.setText(priceBoard.getPriceName());
+                Log.i(TAG, "onBindViewHolder: " + displayName.getText());
             }else{
                 displayName.setText(priceBoard.getPriceIpAddress());
+                Log.i(TAG, "onBindViewHolder: " + displayName.getText());
             }
         }
 
@@ -76,9 +78,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
 
 
     public interface HomeAdapterListener {
-        void onDisplayClicked(int position);
+        void onDisplayClicked(long  id);
 
-        void onDisplayOverflowClicked(int position, View view);
+        void onDisplayOverflowClicked(long id, View view);
     }
 
     public void setHomeAdapterListener(HomeAdapterListener homeAdapterListener) {
@@ -102,10 +104,11 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
 
         @Override
         public void onClick(View v) {
+            PriceBoard priceBoard = getItem(getAdapterPosition());
             if (v == displayOverflowButton) {
-                homeAdapterListener.onDisplayOverflowClicked(getAdapterPosition(), v);
+                homeAdapterListener.onDisplayOverflowClicked(priceBoard.getId(), v);
             } else {
-                homeAdapterListener.onDisplayClicked(getAdapterPosition());
+                homeAdapterListener.onDisplayClicked(priceBoard.getId());
             }
         }
     }

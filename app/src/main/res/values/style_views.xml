@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="HeaderTextViewLabel" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">32sp</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:textAppearance">?android:textAppearanceLarge</item>
+        <item name="android:gravity">center_horizontal</item>\
+    </style>
+
+    <style name="PriceBoardTextView" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:gravity">center_vertical|right</item>
+        <item name="android:layout_margin">8dp</item>
+    </style>
+
+    <style name="EditTextStyle000" parent="Base.V7.Widget.AppCompat.EditText">
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:maxLength">3</item>
+        <item name="android:inputType">number</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
+    <style name="EditTextStyle00" parent="Base.V7.Widget.AppCompat.EditText">
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:maxLength">2</item>
+        <item name="android:inputType">number</item>
+        <item name="android:textSize">24sp</item>
+    </style>
+
+
+    <style name="SpinnerStyle" parent="Base.Widget.AppCompat.DropDownItem.Spinner">
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:color">@color/colorPrimaryDark</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+</resources>
