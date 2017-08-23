@@ -89,4 +89,5 @@
     <string name="R.id.save">Save</string>
     <string name="add_new_baord">Add a new Display Board</string>
     <string name="edit_boad">Edit your Display Board</string>
+    <string name="open_with">Open with...</string>
 </resources>

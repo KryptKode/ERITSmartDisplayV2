@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.kryptkode.cyberman.eritsmartdisplay.AboutFragment">
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/erit_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/erit_logo"
+        app:srcCompat = "@drawable/erit_logo"/>
+    <TextView
+        android:id="@+id/erit_site"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_centerHorizontal="true"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:layout_below="@+id/erit_logo"
+        android:textColor="@color/oldAccent"
+        android:text="@string/www_erit_com_ng"/>
+
+</RelativeLayout>

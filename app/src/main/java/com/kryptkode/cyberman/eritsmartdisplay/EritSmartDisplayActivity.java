@@ -35,7 +35,7 @@ public class EritSmartDisplayActivity extends AppCompatActivity
         //display the home fragment
         HomeFragment homeFragment = HomeFragment.getInstance();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.home_root, homeFragment, null);
+        transaction.add(R.id.home_root, homeFragment, FRAG_TAG);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.commit();
 
@@ -69,9 +69,9 @@ public class EritSmartDisplayActivity extends AppCompatActivity
                     currentPosition = 0;
                 } else if (fragment instanceof SettingsFragment) {
                     currentPosition = 1;
-                } /*else if (fragment instanceof AboutFragment) {
+                } else if (fragment instanceof AboutFragment) {
                     currentPosition = 2;
-                }*/
+                }
                 setActionBarTitle(currentPosition);
                 navigationView.getMenu().getItem(currentPosition).setChecked(true);
 
@@ -135,7 +135,7 @@ public class EritSmartDisplayActivity extends AppCompatActivity
                 fragment = new SettingsFragment();
                 break;
             case 2:
-                fragment = new SettingsFragment();
+                fragment = AboutFragment.getInstance();
                 break;
             default:
                 fragment = HomeFragment.getInstance();
