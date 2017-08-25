@@ -12,11 +12,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class EritSmartDisplayActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.HomeFragmentListener {
-
+    public static final String TAG = EritSmartDisplayActivity.class.getSimpleName();
     public static final String POSITION_KEY = "position";
     public static final String FRAG_TAG = "frag";
     private int currentPosition;
@@ -57,6 +59,8 @@ public class EritSmartDisplayActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        int count = 0;
+        Toast toast;
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -76,6 +80,14 @@ public class EritSmartDisplayActivity extends AppCompatActivity
                 navigationView.getMenu().getItem(currentPosition).setChecked(true);
 
             }
+            else{
+                count++;
+               toast =  Toast.makeText(this, "Press again to exit", Toast.LENGTH_SHORT);
+                toast.show();
+                if(count > 1){
+                    super.onBackPressed();
+                }
+            }
         }
     }
 
@@ -83,6 +95,12 @@ public class EritSmartDisplayActivity extends AppCompatActivity
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         toggle.syncState();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume: ACTIVITY ");
     }
 
     @Override

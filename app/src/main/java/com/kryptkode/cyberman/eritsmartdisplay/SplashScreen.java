@@ -16,7 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.kryptkode.cyberman.eritsmartdisplay.utils.WifiHotspot;
 
 public class SplashScreen extends AppCompatActivity {
-    private static  final int SPLASH_DISPLAY_LENGTH = 1500;
+    private static  final int SPLASH_DISPLAY_LENGTH = 300;
 
     // Declare the Handler as a member variable
     private Handler mHandler = new Handler();

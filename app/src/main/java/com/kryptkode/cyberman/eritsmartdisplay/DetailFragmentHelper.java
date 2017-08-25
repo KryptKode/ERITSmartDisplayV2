@@ -1,7 +1,10 @@
 package com.kryptkode.cyberman.eritsmartdisplay;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -15,7 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
+import java.util.TreeMap;
 
 import static com.kryptkode.cyberman.eritsmartdisplay.DetailFragment.TAG;
 
@@ -52,22 +55,24 @@ public class DetailFragmentHelper {
         String pmsData = "000:00";
         String dpkData = "000:00";
         String agoData = "000:00";
+        if (!TextUtils.isEmpty(data)) {
 
-        index1 = data.indexOf(PMS);
-        index2 = data.indexOf(DPK);
-        if (index1 != -1 && index2 != -1) {
-            pmsData = data.substring(index1 + 3, index2);
-        }
+            index1 = data.indexOf(PMS);
+            index2 = data.indexOf(DPK);
+            if (index1 != -1 && index2 != -1) {
+                pmsData = data.substring(index1 + 3, index2);
+            }
 
-        index1 = data.indexOf(DPK);
-        index2 = data.indexOf(AGO);
-        if (index1 != -1 && index2 != -1) {
-            dpkData = data.substring(index1 + 3, index2);
-        }
+            index1 = data.indexOf(DPK);
+            index2 = data.indexOf(AGO);
+            if (index1 != -1 && index2 != -1) {
+                dpkData = data.substring(index1 + 3, index2);
+            }
 
-        index2 = data.indexOf(AGO);
-        if (index2 != -1) {
-            agoData = data.substring(index2 + 3, index2 + 10);
+            index2 = data.indexOf(AGO);
+            if (index2 != -1) {
+                agoData = data.substring(index2 + 3, index2 + 10);
+            }
         }
 
 
@@ -81,43 +86,52 @@ public class DetailFragmentHelper {
                 view.getWindowToken(), 0);
     }
 
-    public static String createSendFormat(HashMap<String, String> messagesHashMap) {
+    public static String createSendFormat(TreeMap<String, String> messagesTreeMap) {
         String messages = "";
-        for (int i = 1; i <= messagesHashMap.size(); i++) {
-            messages += messages + MSG + i + " " + messagesHashMap.get(MESSAGE + i);
+        for (int i = 1; i <= messagesTreeMap.size(); i++) {
+            messages += messages + MSG + i + " " + messagesTreeMap.get(MESSAGE + i);
         }
         return messages;
     }
 
-    public static HashMap<String, String> jsonToHashMap(String json) {
-        HashMap<String, String> messagesHashMap = new HashMap<>();
-
-        try {
-            JSONObject messagesJsonObject = new JSONObject(json);
-            JSONArray messagesJsonArray = messagesJsonObject.getJSONArray(MESSAGES);
-            for (int i = 1; i <= messagesJsonArray.length(); i++) {
-                JSONObject message = messagesJsonArray.getJSONObject(i - 1);
-                messagesHashMap.put(MESSAGE + i, message.getString(MESSAGE + i));
-                Log.i(TAG, "jsonToHashMap: " + messagesHashMap.size());
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return messagesHashMap;
-    }
-
-    public static String hashMapToJson(HashMap<String, String> messagesHashMap) {
-        JSONObject messagesJsonObject = new JSONObject();
-        JSONArray messagesJsonArray = new JSONArray();
-        for (String key : messagesHashMap.keySet()) {
-            JSONObject mJsonObject = new JSONObject();
+    public static TreeMap<String, String> jsonToTreeMap(String json) {
+        TreeMap<String, String> messagesTreeMap = new TreeMap<>();
+        if (!TextUtils.isEmpty(json)) {
             try {
-                mJsonObject.put(key, messagesHashMap.get(key));
+                JSONObject messagesJsonObject = new JSONObject(json);
+                JSONArray messagesJsonArray = messagesJsonObject.getJSONArray(MESSAGES);
+                for (int i = 1; i <= messagesJsonArray.length(); i++) {
+                    JSONObject message = messagesJsonArray.getJSONObject(i - 1);
+                    messagesTreeMap.put(MESSAGE + i, message.getString(MESSAGE + i));
+                    Log.i(TAG, "jsonToTreeMap: " + messagesTreeMap.size());
+                }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            messagesJsonArray.put(mJsonObject);
+
+        }
+        return messagesTreeMap;
+    }
+
+    public static String hashMapToJson(TreeMap<String, String> messagesTreeMap) {
+        JSONObject messagesJsonObject = new JSONObject();
+        JSONArray messagesJsonArray = new JSONArray();
+        int i = 0;
+        for (String key : messagesTreeMap.keySet()) {
+            JSONObject mJsonObject = new JSONObject();
+            try {
+                mJsonObject.put(key, messagesTreeMap.get(key));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                messagesJsonArray.put(i, mJsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            i++;
         }
 
         try {
@@ -142,8 +156,15 @@ public class DetailFragmentHelper {
         return messStrings[i-1];
     }
 
-    public static HashMap<String, String> getMessages(Cursor cursor){
-        return jsonToHashMap(SmartDisplayContract.getColumnString(cursor,
+    public static TreeMap<String, String> getMessages(Cursor cursor){
+        return jsonToTreeMap(SmartDisplayContract.getColumnString(cursor,
                 SmartDisplayContract.SmartDisplayColumns.COLUMN_MESSAGE_STRING));
+    }
+
+    public static void saveMessages(Context context, Uri uri , TreeMap<String, String> messagesTreeMap) {
+        ContentValues contentValues = new ContentValues();
+        Log.i(TAG, "saveMessages: " + hashMapToJson(messagesTreeMap));
+        contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_MESSAGE_STRING, hashMapToJson(messagesTreeMap));
+        SmartDisplayService.updateTask(context, uri, contentValues);
     }
 }

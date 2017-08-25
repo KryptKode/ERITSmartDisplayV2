@@ -21,6 +21,7 @@ import com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoard;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder> {
     public static final String TAG = HomeAdapter.class.getSimpleName();
+    public static final int IMG_TAG = 1;
     private HomeAdapterListener homeAdapterListener;
     private Context context;
     private LayoutInflater layoutInflater;
@@ -41,6 +42,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         PriceBoard priceBoard = getItem(position);
         ImageView displayAvatar = holder.displayAvatar;
         TextView displayName = holder.displayName;
+        ImageButton displayOverflowButton = holder.displayOverflowButton;
         Log.i(TAG, String.valueOf("onBindViewHolder: " + (priceBoard == null)));
         //set the display name to the name if the user entered it, else, use the IP
         if (priceBoard != null) {
@@ -51,6 +53,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
                 displayName.setText(priceBoard.getPriceIpAddress());
                 Log.i(TAG, "onBindViewHolder: " + displayName.getText());
             }
+            holder.itemView.setTag(priceBoard.getPriceId());
+            displayOverflowButton.setTag(priceBoard.getPriceId());
         }
 
         //TODO Select the Display Image based on the Board Type
@@ -104,23 +108,26 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
 
         @Override
         public void onClick(View v) {
-            PriceBoard priceBoard = getItem(getAdapterPosition());
             if (v == displayOverflowButton) {
-                homeAdapterListener.onDisplayOverflowClicked(priceBoard.getId(), v);
+                homeAdapterListener.onDisplayOverflowClicked((Long) v.getTag(), v);
             } else {
-                homeAdapterListener.onDisplayClicked(priceBoard.getId());
+                    homeAdapterListener.onDisplayClicked((Long) v.getTag());
             }
         }
     }
 
 
-    public void swapCursor(Cursor cursor) {
-        if (mCursor != null) {
-            mCursor.close();
+    public void swapCursor(Cursor c) {
+        // check if this cursor is the same as the previous cursor (mCursor)
+        if (this.mCursor == c) {
+            return; // bc nothing has changed
         }
-        mCursor = cursor;
-        Log.i(TAG, "swapCursor: " + mCursor.getCount());
-        notifyDataSetChanged();
+        this.mCursor = c; // new cursor value assigned
+
+        //check if this is a valid cursor, then update the cursor
+        if (c != null) {
+            this.notifyDataSetChanged();
+        }
     }
 }
 

@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -34,7 +36,7 @@ import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract;
 import com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoardData;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.List;
 
 
@@ -61,10 +63,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private EditText agoTwoEditText;
     private ProgressBar loadingIndicatorProgressBar;
     private TextView loadingIndicatorTextView;
+    private FloatingActionButton fab;
 
     private SharedPreferences preferences;
     private Uri uri;
-    private HashMap<String, String> messagesHashMap;
+    private TreeMap<String, String> messagesTreeMap;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -78,7 +81,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             case R.id.edit_enter_message:
                 String key = MSG + String.valueOf(messagesSpinner.getSelectedItemPosition() + 1);
                 String text = messageEditText.getText().toString();
-                messagesHashMap.put(key, text);
+                messagesTreeMap.put(key, text);
                 DetailFragmentHelper.dismissKeyboard(getContext(), getView());
                 Toast.makeText(getContext(), "Saved " + key, Toast.LENGTH_LONG).show();
                 break;
@@ -131,12 +134,22 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         loadingIndicatorProgressBar = (ProgressBar) view.findViewById(R.id.loading_indicator);
         loadingIndicatorTextView = (TextView) view.findViewById(R.id.tv_loading);
-
+        fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab.setOnClickListener(fabClickListener);
         preferences = getContext().getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE);
-        messagesHashMap = new HashMap<>();
+        messagesTreeMap = new TreeMap<>();
         setUpSpinner();
         return view;
     }
+
+    private View.OnClickListener fabClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            DetailFragmentHelper.saveMessages(getContext(), uri, messagesTreeMap);
+            Snackbar.make(getView().findViewById(R.id.fragment_root), "Saving...", Snackbar.LENGTH_LONG).show();
+
+        }
+    };
 
     private void setUpSpinner() {
         int numOfMessages = preferences.getInt(NUM_OF_MESSAGES_KEY, 8);
@@ -161,7 +174,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
           /*  if (!firstTime){*/
 
             String key = MSG + String.valueOf(position + 1);
-            String message = messagesHashMap.containsKey(key) ?  messagesHashMap.get(key): "" ;
+            String message = messagesTreeMap.containsKey(key) ?  messagesTreeMap.get(key): "" ;
             messageEditText.setText(message);
 
             if (!TextUtils.isEmpty(message)) {
@@ -251,8 +264,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         data.moveToFirst();
         showPriceData(DetailFragmentHelper.parsePriceString(data));
         addToMap(DetailFragmentHelper.getMessages(data));
-
-        Log.i(TAG, "onLoadFinished: " + messagesHashMap.size());
+        Log.i(TAG, "onLoadFinished: " + messagesTreeMap.size());
 
     }
 
@@ -281,9 +293,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         agoTwoEditText.setText(priceBoardData.getAgoPrice().split(":")[1].trim());
     }
 
-    private void addToMap(HashMap<String, String> map){
+    private void addToMap(TreeMap<String, String> map){
         for (String key : map.keySet()) {
-            messagesHashMap.put(key, map.get(key));
+            messagesTreeMap.put(key, map.get(key));
         }
     }
 }

@@ -1,16 +1,21 @@
 package com.kryptkode.cyberman.eritsmartdisplay;
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -43,8 +48,8 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
     private LinearLayoutManager linearLayoutManager;
 
     private HomeFragmentListener homeFragmentListener;
+    private RequestToLoad receiver;
 
-    private Cursor cursor;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -84,13 +89,26 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
         recyclerView.hasFixedSize();
         recyclerView.addItemDecoration(new ItemDivider(getContext()));
         recyclerView.setAdapter(homeAdapter);
+
+        receiver = new RequestToLoad();
+
+        LocalBroadcastManager.getInstance(getContext())
+                .registerReceiver(receiver, new IntentFilter(SmartDisplayService.ACTION_READ_DB));
+
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(receiver);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         createLoader();
+        Log.i(TAG, "onResume: ");
     }
 
     @Override
@@ -128,14 +146,28 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
         return super.onOptionsItemSelected(item);
     }
 
+    private class RequestToLoad extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getBooleanExtra(SmartDisplayService.DISPLAY_PAYLOAD, false)){
+                Log.i(TAG, "onReceive: ");
+                createLoader();
+            }
+
+        }
+    }
+
 
     private void createLoader() {
-        LoaderManager loaderManager = getActivity().getSupportLoaderManager();
+        LoaderManager loaderManager = getLoaderManager();
+        Log.i(TAG, "createLoader: ");
         Loader<Cursor> loader = loaderManager.getLoader(DISPLAY_LOADER_ID);
         if (loader == null) {
             loaderManager.initLoader(DISPLAY_LOADER_ID, null, this);
+            Log.i(TAG, "createLoader: INIT");
         } else {
             loaderManager.restartLoader(DISPLAY_LOADER_ID, null, this);
+            Log.i(TAG, "createLoader: RESTART");
         }
 
     }
@@ -165,8 +197,9 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
 
                     case R.id.action_delete:
                         SmartDisplayService.deleteTask(getContext(), uri);
-                        createLoader();
-                        Toast.makeText(getContext(), "Deleted", Toast.LENGTH_LONG).show();
+                        //createLoader();
+                        Log.i(TAG, "onMenuItemClick:  CALLED LODER");
+                        //Toast.makeText(getContext(), "Deleted", Toast.LENGTH_LONG).show();
                         return true;
                     default:
                         return false;
@@ -184,6 +217,7 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
         switch (id) {
             case DISPLAY_LOADER_ID:
                 return new AsyncTaskLoader<Cursor>(getContext()) {
+                    Cursor cursor;
                     @Override
                     protected void onStartLoading() {
                         super.onStartLoading();
@@ -226,6 +260,7 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
         homeAdapter.swapCursor(data);
         Log.i(TAG, "onLoadFinished: " + data.getCount());
         homeAdapter.notifyDataSetChanged();
@@ -233,7 +268,7 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
+        homeAdapter.swapCursor(null);
     }
 
 
