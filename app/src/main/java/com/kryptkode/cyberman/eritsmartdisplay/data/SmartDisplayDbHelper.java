@@ -6,7 +6,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.kryptkode.cyberman.eritsmartdisplay.DetailFragmentHelper;
 import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract.SmartDisplayColumns;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by Cyberman on 8/9/2017.
@@ -63,9 +68,38 @@ public class SmartDisplayDbHelper extends SQLiteOpenHelper {
         values.put(SmartDisplayColumns.COLUMN_NAME, "Demo Display");
         values.put(SmartDisplayColumns.COLUMN_IP_ADDRESS, "192.168.43.135");
         values.put(SmartDisplayColumns.COLUMN_BOARD_TYPE, "2-2");
-        values.put(SmartDisplayColumns.COLUMN_MESSAGE_STRING, "//M1 Hello world //M2 World is Alive ");
-        values.put(SmartDisplayColumns.COLUMN_PRICE_BOARD_STRING, " //P 197 //D 250 //A 150 ");
+        values.put(SmartDisplayColumns.COLUMN_MESSAGE_STRING, createDummyMessageJson());
+        Log.i(TAG, "loadDummyData: " + values.get(SmartDisplayColumns.COLUMN_MESSAGE_STRING));
+        values.put(SmartDisplayColumns.COLUMN_PRICE_BOARD_STRING, " //P 197:00 //D 250:00 //A 150:00 ");
 
         db.insertOrThrow(SmartDisplayColumns.DISPLAY_TABLE_NAME, null, values);
+    }
+
+    private String createDummyMessageJson(){
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+
+        for (int i = 1; i <= 8 ; i++) {
+            JSONObject msgJsonObject = new JSONObject();
+            try {
+                msgJsonObject.put(DetailFragmentHelper.MESSAGE + i, DetailFragmentHelper.generateDummyMessages(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                jsonArray.put(i-1, msgJsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        try {
+            jsonObject.put(DetailFragmentHelper.MESSAGES, jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsonObject.toString();
     }
 }

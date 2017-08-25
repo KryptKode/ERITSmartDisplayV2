@@ -33,6 +33,7 @@ public class SmartDisplayContract {
 
     /* Helpers to retrieve column values */
     public static String getColumnString(Cursor cursor, String columnName) {
+        cursor.moveToFirst();
         return cursor.getString(cursor.getColumnIndex(columnName));
     }
 

@@ -2,6 +2,7 @@ package com.kryptkode.cyberman.eritsmartdisplay;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,32 +15,39 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract;
+import com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoardData;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> , TextView.OnEditorActionListener{
     public static final String TAG = DetailFragment.class.getSimpleName();
     public static final String BUNDLE_KEY = "mKey";
     private static final int DETAIL_LOADER_ID = 400;
     private static final String MY_PREFS = "prefs";
     private static final String NUM_OF_MESSAGES_KEY = "_Key";
+    public static final String MSG = "message";
 
 
     private AppCompatSpinner messagesSpinner;
@@ -54,12 +62,29 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private ProgressBar loadingIndicatorProgressBar;
     private TextView loadingIndicatorTextView;
 
-    private Cursor mCursor;
+    private SharedPreferences preferences;
     private Uri uri;
+    private HashMap<String, String> messagesHashMap;
 
     public DetailFragment() {
         // Required empty public constructor
     }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+        int id = v.getId();
+        switch (id) {
+            case R.id.edit_enter_message:
+                String key = MSG + String.valueOf(messagesSpinner.getSelectedItemPosition() + 1);
+                String text = messageEditText.getText().toString();
+                messagesHashMap.put(key, text);
+                DetailFragmentHelper.dismissKeyboard(getContext(), getView());
+                Toast.makeText(getContext(), "Saved " + key, Toast.LENGTH_LONG).show();
+                break;
+        }
+            return true;
+        }
 
 
     public interface DetailFragmentListener {
@@ -99,19 +124,25 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         agoThreeEditText = (EditText) view.findViewById(R.id.ago_000);
         agoTwoEditText = (EditText) view.findViewById(R.id.ago_00);
 
+        messagesSpinner.setOnItemSelectedListener(spinnerItemSelectedListener);
+
+        messageEditText.setOnEditorActionListener(this);
+        messageEditText.setImeActionLabel(getString(R.string.save), EditorInfo.IME_ACTION_DONE);
+
         loadingIndicatorProgressBar = (ProgressBar) view.findViewById(R.id.loading_indicator);
         loadingIndicatorTextView = (TextView) view.findViewById(R.id.tv_loading);
 
+        preferences = getContext().getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE);
+        messagesHashMap = new HashMap<>();
         setUpSpinner();
         return view;
     }
 
     private void setUpSpinner() {
-        int numOfMessages = getContext().getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE)
-                .getInt(NUM_OF_MESSAGES_KEY, 8);
+        int numOfMessages = preferences.getInt(NUM_OF_MESSAGES_KEY, 8);
         Log.v(TAG, "Num_of_msg-->" + numOfMessages);
         List<String> spinnerEntries = new ArrayList<>();
-        for (int i = 1; i <= numOfMessages ; i++) {
+        for (int i = 1; i <= numOfMessages; i++) {
             spinnerEntries.add(getString(R.string.message_x, i));
         }
         Log.v(TAG, "Array-->" + spinnerEntries.size());
@@ -122,6 +153,31 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         messagesSpinner.setAdapter(adapter);
 
     }
+
+    AdapterView.OnItemSelectedListener spinnerItemSelectedListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            //get the message associated with the spinner and display on the edittext
+          /*  if (!firstTime){*/
+
+            String key = MSG + String.valueOf(position + 1);
+            String message = messagesHashMap.containsKey(key) ?  messagesHashMap.get(key): "" ;
+            messageEditText.setText(message);
+
+            if (!TextUtils.isEmpty(message)) {
+                messagesTextInputLayout.setHint(getString(R.string.content_of_message) + " " + (position + 1));
+            } else {
+                messagesTextInputLayout.setHint(getString(R.string.enter_the_message) + " " + (position + 1));
+            }
+            /*}
+            firstTime = false;*/
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
+    };
 
 
     @Override
@@ -147,6 +203,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             case DETAIL_LOADER_ID:
                 return new AsyncTaskLoader<Cursor>(getContext()) {
                     Cursor cursor;
+
                     @Override
                     protected void onStartLoading() {
                         super.onStartLoading();
@@ -190,8 +247,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mCursor = data;
         Log.i(TAG, "onLoadFinished: " + data.getCount());
+        data.moveToFirst();
+        showPriceData(DetailFragmentHelper.parsePriceString(data));
+        addToMap(DetailFragmentHelper.getMessages(data));
+
+        Log.i(TAG, "onLoadFinished: " + messagesHashMap.size());
+
     }
 
     @Override
@@ -208,5 +270,20 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             loaderManager.restartLoader(DETAIL_LOADER_ID, null, this);
         }
 
+    }
+
+    private void showPriceData(PriceBoardData priceBoardData) {
+        pmsThreeEditText.setText(priceBoardData.getPmsPrice().split(":")[0].trim());
+        pmsTwoEditText.setText(priceBoardData.getPmsPrice().split(":")[1].trim());
+        dpkThreeEditText.setText(priceBoardData.getDpkPrice().split(":")[0].trim());
+        dpkTwoEditText.setText(priceBoardData.getDpkPrice().split(":")[1].trim());
+        agoThreeEditText.setText(priceBoardData.getAgoPrice().split(":")[0].trim());
+        agoTwoEditText.setText(priceBoardData.getAgoPrice().split(":")[1].trim());
+    }
+
+    private void addToMap(HashMap<String, String> map){
+        for (String key : map.keySet()) {
+            messagesHashMap.put(key, map.get(key));
+        }
     }
 }
