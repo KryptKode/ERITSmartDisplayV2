@@ -131,22 +131,19 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
 
     private void createLoader() {
         LoaderManager loaderManager = getActivity().getSupportLoaderManager();
-        if ( loaderManager != null) {
-            loaderManager.restartLoader(DISPLAY_LOADER_ID, null, this);
-            Log.i(TAG, "createLoader: " + "restart" +true);
-        } else {
+        Loader<Cursor> loader = loaderManager.getLoader(DISPLAY_LOADER_ID);
+        if (loader == null) {
             loaderManager.initLoader(DISPLAY_LOADER_ID, null, this);
-            Log.i(TAG, "createLoader: " + "init" + false);
+        } else {
+            loaderManager.restartLoader(DISPLAY_LOADER_ID, null, this);
         }
+
     }
 
     /*Methods for the adapter listener*/
     @Override
     public void onDisplayClicked(long id) {
-        Uri uri = SmartDisplayContract.SmartDisplayColumns.buildDisplayUri(id);
-        Intent intent = new Intent(getContext(), DetailActivity.class);
-        intent.setData(uri);
-        startActivity(intent);
+       HomeFragmentHelper.startDetailActivity(getContext(), id);
     }
 
     /*Methods for the adapter listener*/
