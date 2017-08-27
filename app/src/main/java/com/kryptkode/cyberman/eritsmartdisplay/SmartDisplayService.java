@@ -74,6 +74,7 @@ public class SmartDisplayService extends IntentService {
         if (getContentResolver().insert(SmartDisplayContract.SmartDisplayColumns.DISPLAY_CONTENT_URI, values) != null) {
             Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_LONG).show();
             Log.d(TAG, "Inserted new task");
+            sendData(true);
         } else {
             Log.w(TAG, "Error inserting new task");
         }
@@ -82,6 +83,7 @@ public class SmartDisplayService extends IntentService {
     private void performUpdate(Uri uri, ContentValues values) {
         int count = getContentResolver().update(uri, values, null, null);
         Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_LONG).show();
+        sendData(true);
         Log.d(TAG, "Updated " + count + " task items");
     }
 

@@ -34,21 +34,19 @@ public class PriceSelectDisplayDialog extends DialogFragment implements AdapterV
 
     private boolean isEditing;
     private boolean hasUserSelected;
-    private boolean isNext;
-    private int boardType;
+    private int priceSpinnerPosition;
 
 
     public interface PriceSelectDisplayDialogListener {
-        void onPriceDialogPositiveButtonClicked(DialogFragment dialog, int boardType);
+        void onPriceDialogPositiveButtonClicked(DialogFragment dialog, int priceSpinnerPosition, boolean isEditing);
     }
 
-    public static PriceSelectDisplayDialog getInstance(int boardType,  boolean isEditing, boolean isNext) {
+    public static PriceSelectDisplayDialog getInstance(int priceSpinnerPosition,  boolean isEditing) {
         PriceSelectDisplayDialog priceSelectDisplayDialog = new PriceSelectDisplayDialog();
 
         Bundle bundle = new Bundle();
-        bundle.putInt(BOARD_TYPE_KEY, boardType);
+        bundle.putInt(BOARD_TYPE_KEY, priceSpinnerPosition);
         bundle.putBoolean(POSITIVE_BUTTOn_KEY, isEditing);
-        bundle.putBoolean(IS_NEXT_KEY, isNext);
         priceSelectDisplayDialog.setArguments(bundle);
         return priceSelectDisplayDialog;
     }
@@ -75,8 +73,7 @@ public class PriceSelectDisplayDialog extends DialogFragment implements AdapterV
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
         isEditing = bundle.getBoolean(POSITIVE_BUTTOn_KEY);
-        boardType = bundle.getInt(BOARD_TYPE_KEY);
-        isNext = bundle.getBoolean(IS_NEXT_KEY);
+        priceSpinnerPosition = bundle.getInt(BOARD_TYPE_KEY);
 
     }
 
@@ -88,9 +85,7 @@ public class PriceSelectDisplayDialog extends DialogFragment implements AdapterV
         appCompatImageView = (AppCompatImageView) spinnerView.findViewById(R.id.dialog_add_price_board_image);
         appCompatSpinner = (AppCompatSpinner) spinnerView.findViewById(R.id.dialog_price_board_spinner);
         appCompatSpinner.setOnItemSelectedListener(this);
-        if(boardType > 0){
-            appCompatSpinner.setSelection(boardType - 1, true);
-        }
+
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
         alertDialogBuilder.setView(spinnerView);
@@ -100,7 +95,7 @@ public class PriceSelectDisplayDialog extends DialogFragment implements AdapterV
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(hasUserSelected){
-                    listener.onPriceDialogPositiveButtonClicked(PriceSelectDisplayDialog.this, boardType);
+                    listener.onPriceDialogPositiveButtonClicked(PriceSelectDisplayDialog.this, priceSpinnerPosition, isEditing);
                 }else {
                     showToast();
                 }
@@ -108,7 +103,8 @@ public class PriceSelectDisplayDialog extends DialogFragment implements AdapterV
         });
 
         if(isEditing){
-            alertDialogBuilder.setNeutralButton(R.string.R_id_save, new DialogInterface.OnClickListener() {
+            appCompatSpinner.setSelection(priceSpinnerPosition - 1, true);
+            alertDialogBuilder.setNeutralButton(R.string.save, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     //TODO: Add save
@@ -129,8 +125,8 @@ public class PriceSelectDisplayDialog extends DialogFragment implements AdapterV
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (position > 0) {
-            boardType = position + 1;
-            setImageResource(boardType);
+            priceSpinnerPosition = position;
+            setImageResource(priceSpinnerPosition);
             hasUserSelected = true;
         } else {
            showToast();
@@ -139,7 +135,7 @@ public class PriceSelectDisplayDialog extends DialogFragment implements AdapterV
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        boardType = -100;
+        priceSpinnerPosition = -100;
     }
 
 
@@ -148,7 +144,7 @@ public class PriceSelectDisplayDialog extends DialogFragment implements AdapterV
     }
 
     //used to change the image resource or video for the proto_simutation of the display
-    private void setImageResource(int boardType) {
+    private void setImageResource(int priceSpinnerPosition) {
         // TODO: Implememt the method to change the image resouce
     }
 }

@@ -2,6 +2,7 @@ package com.kryptkode.cyberman.eritsmartdisplay.models;
 
 import android.database.Cursor;
 import android.os.Parcel;
+import android.util.Log;
 
 import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract;
 import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract.SmartDisplayColumns;
@@ -11,13 +12,16 @@ import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract.SmartDi
  */
 
 public class MessageBoard extends SmartDisplay {
+    public static final String TAG = MessageBoard.class.getSimpleName();
     private String messageString;
+    private int numberOfMessages;
     private MessageBoardType messageBoardType;
 
-    public MessageBoard(long id, String name, String ipAddress, String messageString, MessageBoardType messageBoardType) {
+    public MessageBoard(long id, String name, String ipAddress, String messageString, int numberOfMessages, MessageBoardType messageBoardType) {
         super(id, name, ipAddress);
         this.messageString = messageString;
         this.messageBoardType = messageBoardType;
+        this.numberOfMessages = numberOfMessages;
     }
 
     public MessageBoard( String name, String ipAddress, MessageBoardType messageBoardType) {
@@ -29,12 +33,24 @@ public class MessageBoard extends SmartDisplay {
 
     }
 
+    public int getNumberOfMessages() {
+        return numberOfMessages;
+    }
+
+    public void setNumberOfMessages(int numberOfMessages) {
+        this.numberOfMessages = numberOfMessages;
+    }
+
     public MessageBoard(Cursor cursor) throws Exception {
         super(cursor);
         this.messageString = SmartDisplayContract.getColumnString(cursor, SmartDisplayColumns.COLUMN_MESSAGE_STRING);
+        Log.i(TAG, "MessageBoard: " + this.messageString);
         String boardType = SmartDisplayContract.getColumnString(cursor, SmartDisplayColumns.COLUMN_BOARD_TYPE);
-        int num = Integer.parseInt(boardType.split("-")[0]);
+        int num = Integer.parseInt(boardType.split("\\|")[0]);
+        Log.i(TAG, "MessageBoard: " + num);
         this.messageBoardType = getMessageBoardTypeFromInt(num);
+        this.numberOfMessages = SmartDisplayContract.getColumnInt(cursor, SmartDisplayColumns.COLUMN_NUMBER_OF_MSG);
+
     }
 
     public String getMessageString() {
@@ -66,9 +82,11 @@ public class MessageBoard extends SmartDisplay {
             case (10):
                 return MessageBoardType.MESSAGE_BOARD_TYPE_TEN;
             default:
-                throw new Exception("Integer" + code + "is not associated with any Message board type");
+                throw new Exception("Integer " + code + " is not associated with any Message board type");
         }
     }
+
+
 
     public MessageBoardType getMessageBoardType() {
         return messageBoardType;

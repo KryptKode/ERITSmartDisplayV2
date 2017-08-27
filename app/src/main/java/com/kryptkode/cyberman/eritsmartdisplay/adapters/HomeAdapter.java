@@ -44,17 +44,20 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         TextView displayName = holder.displayName;
         ImageButton displayOverflowButton = holder.displayOverflowButton;
         Log.i(TAG, String.valueOf("onBindViewHolder: " + (priceBoard == null)));
+        Log.i(TAG, "onBindViewHolder: KJJK " + priceBoard.getPriceName());
         //set the display name to the name if the user entered it, else, use the IP
         if (priceBoard != null) {
-            if (priceBoard.getPriceName() != null || !TextUtils.isEmpty(priceBoard.getName())) {
+            if (!TextUtils.isEmpty(priceBoard.getName())) {
                 displayName.setText(priceBoard.getPriceName());
-                Log.i(TAG, "onBindViewHolder: " + displayName.getText());
+                Log.i(TAG, "onBindViewHolder: PRICE NAME " + priceBoard.getPriceName());
+                Log.i(TAG, "onBindViewHolder: NAME " + displayName.getText());
             }else{
                 displayName.setText(priceBoard.getPriceIpAddress());
-                Log.i(TAG, "onBindViewHolder: " + displayName.getText());
+                Log.i(TAG, "onBindViewHolder: PRICE IP " + priceBoard.getPriceIpAddress());
+                Log.i(TAG, "onBindViewHolder: IP" + displayName.getText());
             }
             holder.itemView.setTag(priceBoard.getPriceId());
-            displayOverflowButton.setTag(priceBoard.getPriceId());
+            displayOverflowButton.setTag(priceBoard);
         }
 
         //TODO Select the Display Image based on the Board Type
@@ -73,7 +76,11 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         }
 
         try {
-            return new PriceBoard(mCursor);
+            PriceBoard priceBoard = new PriceBoard(mCursor);
+            Log.i(TAG, "getItem: "+ priceBoard.getName());
+            Log.i(TAG, "getItem: "+ priceBoard.getIpAddress());
+            Log.i(TAG, "getItem: "+ priceBoard.getPriceId());
+            return priceBoard;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -84,7 +91,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
     public interface HomeAdapterListener {
         void onDisplayClicked(long  id);
 
-        void onDisplayOverflowClicked(long id, View view);
+        void onDisplayOverflowClicked(PriceBoard priceBoard, View view);
     }
 
     public void setHomeAdapterListener(HomeAdapterListener homeAdapterListener) {
@@ -109,7 +116,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         @Override
         public void onClick(View v) {
             if (v == displayOverflowButton) {
-                homeAdapterListener.onDisplayOverflowClicked((Long) v.getTag(), v);
+                homeAdapterListener.onDisplayOverflowClicked((PriceBoard) v.getTag(), v);
             } else {
                     homeAdapterListener.onDisplayClicked((Long) v.getTag());
             }

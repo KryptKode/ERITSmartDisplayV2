@@ -49,6 +49,7 @@ public class SmartDisplayDbHelper extends SQLiteOpenHelper {
                 SmartDisplayColumns.COLUMN_IP_ADDRESS + TEXT + COMMA_SEP +
                 SmartDisplayColumns.COLUMN_BOARD_TYPE + TEXT + COMMA_SEP +
                 SmartDisplayColumns.COLUMN_MESSAGE_STRING + TEXT + COMMA_SEP +
+                SmartDisplayColumns.COLUMN_NUMBER_OF_MSG + INTEGER + COMMA_SEP +
                 SmartDisplayColumns.COLUMN_PRICE_BOARD_STRING + TEXT + CLOSE_PARENTHESIS;
 
         Log.i(TAG, "onCreate: " + CREATE_DISPLAY_TABLE);
@@ -65,9 +66,10 @@ public class SmartDisplayDbHelper extends SQLiteOpenHelper {
 
     private void loadDummyData(SQLiteDatabase db) {
         ContentValues values = new ContentValues();
-        values.put(SmartDisplayColumns.COLUMN_NAME, "Demo Display");
+        values.put(SmartDisplayColumns.COLUMN_NAME, "Demo Board X");
         values.put(SmartDisplayColumns.COLUMN_IP_ADDRESS, "192.168.43.135");
-        values.put(SmartDisplayColumns.COLUMN_BOARD_TYPE, "2-2");
+        values.put(SmartDisplayColumns.COLUMN_BOARD_TYPE, "2|2");
+        values.put(SmartDisplayColumns.COLUMN_NUMBER_OF_MSG, 14);
         values.put(SmartDisplayColumns.COLUMN_MESSAGE_STRING, createDummyMessageJson());
         Log.i(TAG, "loadDummyData: " + values.get(SmartDisplayColumns.COLUMN_MESSAGE_STRING));
         values.put(SmartDisplayColumns.COLUMN_PRICE_BOARD_STRING, " //P 197:00 //D 250:00 //A 150:00 ");

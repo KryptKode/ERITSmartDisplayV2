@@ -117,7 +117,7 @@ public class AddNewDisplayActivityFragment extends Fragment implements AdapterVi
             }
         } else { //for the price spinner
             try {
-                priceBoardType = PriceBoard.getPriceBoardTypeFromInt(position + 1);
+                priceBoardType = PriceBoard.getPriceBoardTypeFromInt(position);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -137,10 +137,10 @@ public class AddNewDisplayActivityFragment extends Fragment implements AdapterVi
 
         boardName = boardNameEditText.getText().toString();
         boardIp = ipAddressEditText.getText().toString();
-        boardType = messageTypeString + "-" + priceTypeString;
+        boardType = messageTypeString + "|" + priceTypeString;
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_NAME,boardName );
+        contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_NAME, boardName );
         contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_IP_ADDRESS, boardIp);
         contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_BOARD_TYPE, boardType);
 

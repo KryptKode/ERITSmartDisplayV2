@@ -47,8 +47,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public static final String TAG = DetailFragment.class.getSimpleName();
     public static final String BUNDLE_KEY = "mKey";
     private static final int DETAIL_LOADER_ID = 400;
-    private static final String MY_PREFS = "prefs";
-    private static final String NUM_OF_MESSAGES_KEY = "_Key";
+    public static final String MY_PREFS = "prefs";
+    public static final String NUM_OF_MESSAGES_KEY = "_Key";
     public static final String MSG = "message";
 
 
@@ -68,6 +68,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private SharedPreferences preferences;
     private Uri uri;
     private TreeMap<String, String> messagesTreeMap;
+    private int numOfMessages;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -138,7 +139,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         fab.setOnClickListener(fabClickListener);
         preferences = getContext().getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE);
         messagesTreeMap = new TreeMap<>();
-        setUpSpinner();
         return view;
     }
 
@@ -152,7 +152,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     };
 
     private void setUpSpinner() {
-        int numOfMessages = preferences.getInt(NUM_OF_MESSAGES_KEY, 8);
         Log.v(TAG, "Num_of_msg-->" + numOfMessages);
         List<String> spinnerEntries = new ArrayList<>();
         for (int i = 1; i <= numOfMessages; i++) {
@@ -262,8 +261,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.i(TAG, "onLoadFinished: " + data.getCount());
         data.moveToFirst();
+        numOfMessages = SmartDisplayContract.getColumnInt(data, SmartDisplayContract.SmartDisplayColumns.COLUMN_NUMBER_OF_MSG);
         showPriceData(DetailFragmentHelper.parsePriceString(data));
         addToMap(DetailFragmentHelper.getMessages(data));
+        setUpSpinner();
         Log.i(TAG, "onLoadFinished: " + messagesTreeMap.size());
 
     }

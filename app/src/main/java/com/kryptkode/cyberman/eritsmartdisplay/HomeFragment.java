@@ -5,12 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -26,19 +23,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.kryptkode.cyberman.eritsmartdisplay.adapters.HomeAdapter;
 import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract;
+import com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoard;
 import com.kryptkode.cyberman.eritsmartdisplay.utils.ItemDivider;
 import com.kryptkode.cyberman.eritsmartdisplay.views.EditTextDialog;
-import com.kryptkode.cyberman.eritsmartdisplay.views.MessageSelectDisplayDialog;
-import com.kryptkode.cyberman.eritsmartdisplay.views.PriceSelectDisplayDialog;
 
 
-public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterListener, LoaderManager.LoaderCallbacks<Cursor>,
-        EditTextDialog.EditTextDialogListener,
-        PriceSelectDisplayDialog.PriceSelectDisplayDialogListener, MessageSelectDisplayDialog.SelectDisplayDialogListener{
+public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterListener, LoaderManager.LoaderCallbacks<Cursor> {
 
 
     public static final String TAG = HomeFragment.class.getSimpleName();
@@ -121,23 +114,20 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        Intent intent = new Intent (getContext(), AddNewDisplayActivity.class);
+        Intent intent = new Intent(getContext(), AddNewDisplayActivity.class);
         if (id == R.id.action_add_filling_station_display) {
             /*intent.putExtra(AddNewDisplayActivity.EXTRA_INT, 1);
             startActivity(intent);*/
-            EditTextDialog editTextDialog = EditTextDialog.getInstance(null, null, false);
+            EditTextDialog editTextDialog = EditTextDialog.getInstance(null, null, false, EditTextDialog.FILLING_STATION_TYPE);
             editTextDialog.setCancelable(false);
-            editTextDialog.show(getFragmentManager(), "edit");
+            editTextDialog.show(getChildFragmentManager(), "edit");
             return true;
-        }else
-
-        if (id == R.id.action_add_resturant_display) {
-            /*intent.putExtra(AddNewDisplayActivity.EXTRA_INT, 2);
-            startActivity(intent);*/
-
+        } else if (id == R.id.action_add_resturant_display) {
+            EditTextDialog editTextDialog = EditTextDialog.getInstance(null, null, false, EditTextDialog.EATRIES_TYPE);
+            editTextDialog.setCancelable(false);
+            editTextDialog.show(getChildFragmentManager(), "edit");
             return true;
-        }else
-        if (id == R.id.action_add_custom_display) {
+        } else if (id == R.id.action_add_custom_display) {
             intent.putExtra(AddNewDisplayActivity.EXTRA_INT, 3);
             startActivity(intent);
             return true;
@@ -149,7 +139,7 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
     private class RequestToLoad extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getBooleanExtra(SmartDisplayService.DISPLAY_PAYLOAD, false)){
+            if (intent.getBooleanExtra(SmartDisplayService.DISPLAY_PAYLOAD, false)) {
                 Log.i(TAG, "onReceive: ");
                 createLoader();
             }
@@ -175,24 +165,36 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
     /*Methods for the adapter listener*/
     @Override
     public void onDisplayClicked(long id) {
-       HomeFragmentHelper.startDetailActivity(getContext(), id);
+        HomeFragmentHelper.startDetailActivity(getContext(), id);
     }
 
     /*Methods for the adapter listener*/
     @Override
-    public void onDisplayOverflowClicked(long id, View view) {
-        final long displayId = id;
-        PopupMenu popupMenu = new PopupMenu(getContext(), view );
+    public void onDisplayOverflowClicked(final PriceBoard priceBoard, View view) {
+        final long displayId = priceBoard.getPriceId();
+        PopupMenu popupMenu = new PopupMenu(getContext(), view);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Uri uri = SmartDisplayContract.SmartDisplayColumns.buildDisplayUri(displayId);
                 int id = item.getItemId();
-                switch (id){
+                switch (id) {
                     case R.id.action_edit:
-                        Intent intent = new Intent(getContext(), AddNewDisplayActivity.class);
+                        /*Intent intent = new Intent(getContext(), AddNewDisplayActivity.class);
                         intent.setData(uri);
                         startActivity(intent);
+                        return true;*/
+
+
+                        EditTextDialog editTextDialog = EditTextDialog.getInstance(priceBoard.getPriceName(),
+                                priceBoard.getPriceIpAddress(),
+                                true,priceBoard.getMessageBoardType().getNumberOfCascades() - 1 ,
+                                priceBoard.getNumberOfMessages(), priceBoard.getPriceBoardType().getNumberOfCascades(),
+                                priceBoard.getPriceBoardType() == PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE ?
+                                        EditTextDialog.EATRIES_TYPE : EditTextDialog.FILLING_STATION_TYPE, priceBoard.getId());
+                        editTextDialog.setCancelable(false);
+                        editTextDialog.show(getChildFragmentManager(), "");
+
                         return true;
 
                     case R.id.action_delete:
@@ -218,13 +220,14 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
             case DISPLAY_LOADER_ID:
                 return new AsyncTaskLoader<Cursor>(getContext()) {
                     Cursor cursor;
+
                     @Override
                     protected void onStartLoading() {
                         super.onStartLoading();
                         if (cursor != null) {
                             deliverResult(cursor);
                             Log.i(TAG, "onStartLoading: ");
-                        }else {
+                        } else {
                             forceLoad();
                         }
                     }
@@ -239,7 +242,7 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
                                             null,
                                             null,
                                             null);
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             Log.i(TAG, "loadInBackground: ");
                             e.printStackTrace();
                             return null;
@@ -251,6 +254,8 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
                         cursor = data;
                         Log.i(TAG, "deliverResult: ");
                         super.deliverResult(data);
+
+
                     }
                 };
             default:
@@ -272,23 +277,5 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
     }
 
 
-    @Override
-    public void onPriceDialogPositiveButtonClicked(DialogFragment dialog, int boardType) {
-//        dialog.dismiss();
 
-    }
-
-    @Override
-    public void onMessageDialogPositiveButtonClicked(DialogFragment dialog, int boardType) {
-        dialog.dismiss();
-        PriceSelectDisplayDialog priceSelectDisplayDialog = PriceSelectDisplayDialog.getInstance(-1, false, false);
-        priceSelectDisplayDialog.show(getFragmentManager(), "msg");
-    }
-
-    @Override
-    public void onDialogPositiveButtonClicked(DialogFragment dialog, String boardName, String boardIpAddress) {
-//        dialog.dismiss();
-        MessageSelectDisplayDialog messageSelectDisplayDialog = MessageSelectDisplayDialog.getInstance(false, true);
-        messageSelectDisplayDialog.show(getFragmentManager(), "msg");
-    }
 }

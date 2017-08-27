@@ -44,6 +44,7 @@
                 android:id="@+id/display_overflow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="4dp"
                 android:background="@drawable/background_state"
                 android:contentDescription="@string/overflow_menu_for_display"
                 app:srcCompat="@drawable/ic_more_vert_black_24dp" />

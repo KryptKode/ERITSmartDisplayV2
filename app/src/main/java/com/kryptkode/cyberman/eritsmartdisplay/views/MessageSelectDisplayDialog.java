@@ -23,8 +23,12 @@ import com.kryptkode.cyberman.eritsmartdisplay.R;
  */
 
 public class MessageSelectDisplayDialog extends DialogFragment implements AdapterView.OnItemSelectedListener {
-    public static final String POSITIVE_BUTTOn_KEY = "positive_button";
+    public static final String IS_IN_EDIT_MODE_KEY = "positive_button";
     public static final String BOARD_TYPE_KEY = "board_type";
+    public static final String MESSAGE_SPINNER_POSITION_KEY = "spinner_position";
+    public static final String NUMBER_OF_MESSAGE_KEY = "num_of_mgsg";
+    public static final String PRICE_SPINNER_POSITION_KEY = "price_key";
+    public static final String BOARD_ID_KEY = "ID_";
 
     private SelectDisplayDialogListener listener;
 
@@ -35,20 +39,28 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
 
 
     private boolean isEditing;
-    private boolean hasUserSelected;
     private int boardType;
-    private String numOfMessages;
+    private int numberOfMessages;
+    private int messageSpinnerPositon;
+    private int priceSpinnerPosition;
+    private long boardId;
 
 
     public interface SelectDisplayDialogListener {
-        void onMessageDialogPositiveButtonClicked(DialogFragment dialog, int boardType);
+        void onMessageDialogPositiveButtonClicked(DialogFragment dialog, int messageSpinnerPositon, int numberOfMessages, int boardType, int priceSpinnerPosition, long boardId, boolean isEditing);
     }
 
-    public static MessageSelectDisplayDialog getInstance(boolean isEditing, boolean isNext) {
+    public static MessageSelectDisplayDialog getInstance(boolean isEditing, int messageSpinnerPositon,
+                                                         int numberOfMessages, int boardType, int priceSpinnerPosition, long boardId) {
         MessageSelectDisplayDialog priceSelectDisplayDialog = new MessageSelectDisplayDialog();
 
         Bundle bundle = new Bundle();
-        bundle.putBoolean(POSITIVE_BUTTOn_KEY, isEditing);
+        bundle.putBoolean(IS_IN_EDIT_MODE_KEY, isEditing);
+        bundle.putInt(MESSAGE_SPINNER_POSITION_KEY, messageSpinnerPositon);
+        bundle.putInt(NUMBER_OF_MESSAGE_KEY, numberOfMessages);
+        bundle.putInt(BOARD_TYPE_KEY, boardType);
+        bundle.putInt(PRICE_SPINNER_POSITION_KEY, priceSpinnerPosition);
+        bundle.putLong(BOARD_ID_KEY, boardId);
         priceSelectDisplayDialog.setArguments(bundle);
         return priceSelectDisplayDialog;
     }
@@ -74,7 +86,12 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
-        isEditing = bundle.getBoolean(POSITIVE_BUTTOn_KEY);
+        isEditing = bundle.getBoolean(IS_IN_EDIT_MODE_KEY);
+        boardType = bundle.getInt(BOARD_TYPE_KEY);
+        numberOfMessages = bundle.getInt(NUMBER_OF_MESSAGE_KEY);
+        messageSpinnerPositon = bundle.getInt(MESSAGE_SPINNER_POSITION_KEY);
+        priceSpinnerPosition = bundle.getInt(PRICE_SPINNER_POSITION_KEY);
+        boardId = bundle.getLong(BOARD_ID_KEY);
 
     }
 
@@ -88,27 +105,26 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
         textInputEditText = (TextInputEditText) spinnerView.findViewById(R.id.add_num_of_msgs);
         appCompatSpinner.setOnItemSelectedListener(this);
 
-        if (boardType > 0) {
-            appCompatSpinner.setSelection(boardType - 1, true);
-        }
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
         alertDialogBuilder.setView(spinnerView);
         alertDialogBuilder.setTitle(isEditing ? R.string.edit_boad : R.string.add_new_baord);
+        alertDialogBuilder.setMessage("Message Board Type");
         alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setPositiveButton(getString(R.string.dialog_next), new DialogInterface.OnClickListener() {
+        alertDialogBuilder.setPositiveButton(boardType == EditTextDialog.EATRIES_TYPE ? getString(R.string.dialog_done) : getString(R.string.dialog_next), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                    listener.onMessageDialogPositiveButtonClicked(MessageSelectDisplayDialog.this, boardType);
+
+                numberOfMessages = Integer.parseInt(textInputEditText.getText().toString());
+                listener.onMessageDialogPositiveButtonClicked(MessageSelectDisplayDialog.this, messageSpinnerPositon, numberOfMessages,priceSpinnerPosition,  boardType, boardId, isEditing);
 
             }
         });
 
         if (isEditing) {
-            if (numOfMessages != null) {
-                textInputEditText.setText(numOfMessages);
-            }
-            alertDialogBuilder.setNeutralButton(R.string.R_id_save, new DialogInterface.OnClickListener() {
+            textInputEditText.setText(String.valueOf(numberOfMessages));
+            appCompatSpinner.setSelection(messageSpinnerPositon, true);
+            alertDialogBuilder.setNeutralButton(R.string.save, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     //TODO: Add save
@@ -135,8 +151,8 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (position > 0) {
-            boardType = position + 1;
-            setImageResource(boardType);
+            messageSpinnerPositon = position + 1;
+            setImageResource(messageSpinnerPositon);
             dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(true);
         } else {
             showToast();
@@ -146,7 +162,7 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        boardType = -100;
+        messageSpinnerPositon = -100;
     }
 
 

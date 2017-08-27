@@ -24,6 +24,7 @@ public class SmartDisplayContract {
         public static final String COLUMN_IP_ADDRESS = "ip_address";
         public static final String COLUMN_BOARD_TYPE = "board_type";
         public static final String COLUMN_MESSAGE_STRING = "message_string";
+        public static final String COLUMN_NUMBER_OF_MSG = "number_of_messges";
         public static final String COLUMN_PRICE_BOARD_STRING = "price_string";
 
         public static Uri buildDisplayUri(long id) {
@@ -33,12 +34,15 @@ public class SmartDisplayContract {
 
     /* Helpers to retrieve column values */
     public static String getColumnString(Cursor cursor, String columnName) {
-        cursor.moveToFirst();
         return cursor.getString(cursor.getColumnIndex(columnName));
     }
 
 
     public static long getColumnLong(Cursor cursor, String columnName) {
         return cursor.getLong(cursor.getColumnIndex(columnName));
+    }
+
+    public static int getColumnInt(Cursor cursor, String columnName) {
+        return cursor.getInt(cursor.getColumnIndex(columnName));
     }
 }

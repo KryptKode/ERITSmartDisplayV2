@@ -3,6 +3,7 @@ package com.kryptkode.cyberman.eritsmartdisplay.models;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract;
 import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract.SmartDisplayColumns;
@@ -12,6 +13,7 @@ import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract.SmartDi
  */
 
 public class SmartDisplay implements Parcelable {
+    public static final String TAG = SmartDisplay.class.getSimpleName();
     private long id;
     private String name;
     private String ipAddress;
@@ -34,10 +36,14 @@ public class SmartDisplay implements Parcelable {
 
     public SmartDisplay(Cursor cursor){
         this.id = SmartDisplayContract.getColumnLong(cursor, SmartDisplayColumns._ID);
+        Log.i(TAG, "SmartDisplay: " + this.id);
         this.name = SmartDisplayContract.getColumnString(cursor,
                 SmartDisplayColumns.COLUMN_NAME);
+
+        Log.i(TAG, "SmartDisplay: " + this.name);
         this.ipAddress = SmartDisplayContract.getColumnString(cursor,
                 SmartDisplayColumns.COLUMN_IP_ADDRESS);
+        Log.i(TAG, "SmartDisplay: " + this.ipAddress);
     }
 
     public String getName() {
