@@ -77,7 +77,7 @@ public class SmartDisplayDbHelper extends SQLiteOpenHelper {
         db.insertOrThrow(SmartDisplayColumns.DISPLAY_TABLE_NAME, null, values);
     }
 
-    private String createDummyMessageJson(){
+   /* private String createDummyMessageJson(){
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
 
@@ -103,5 +103,5 @@ public class SmartDisplayDbHelper extends SQLiteOpenHelper {
             e.printStackTrace();
         }
         return jsonObject.toString();
-    }
+    }*/
 }

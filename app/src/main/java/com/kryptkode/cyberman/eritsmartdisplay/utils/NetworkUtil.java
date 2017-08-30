@@ -30,7 +30,7 @@ public abstract class NetworkUtil extends Context {
                 .appendPath(WRITE_TO_DISPLAY);
         builder.appendPath(display.getMessageString());
         if (!TextUtils.isEmpty(display.getPriceString())) {
-            builder.appendPath(display.getPriceIpAddress());
+            builder.appendPath(display.getIpAddress());
         }
 
         try{

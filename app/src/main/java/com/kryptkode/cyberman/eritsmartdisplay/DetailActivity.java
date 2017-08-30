@@ -27,8 +27,7 @@ public class DetailActivity extends AppCompatActivity {
         PriceBoard priceBoard = getIntent().getParcelableExtra(EXTRA_KEY);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.detail_root, DetailFragment.getInstance(uri,  priceBoard.getPriceBoardType() == PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE ?
-                EditTextDialog.EATRIES_TYPE : EditTextDialog.FILLING_STATION_TYPE));
+        transaction.add(R.id.detail_root, DetailFragment.getInstance( priceBoard));
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.commit();
 

@@ -36,12 +36,6 @@ public class EritSmartDisplayActivity extends AppCompatActivity
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
 
- /*   private String boardName;
-    private String boardIp;
-    private int messageBoardType;
-    private int numberOfMessages;
-    private int priceBoardType;
-    private long boardId;*/
     private PriceBoard priceBoard;
 
 
@@ -73,7 +67,6 @@ public class EritSmartDisplayActivity extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        priceBoard = new PriceBoard();
     }
 
 
@@ -208,13 +201,10 @@ public class EritSmartDisplayActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPriceDialogPositiveButtonClicked(DialogFragment dialog, int boardType, boolean isEditing) {
-//        this.priceBoardType = boardType;
-        try {
-            priceBoard.setPriceBoardType(PriceBoard.getPriceBoardTypeFromInt(boardType));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void onPriceDialogPositiveButtonClicked(DialogFragment dialog, PriceBoard priceBoard, boolean isEditing) {
+
+        this.priceBoard = priceBoard;
+
         if(isEditing){
             updateBoard();
         }else {
@@ -226,59 +216,31 @@ public class EritSmartDisplayActivity extends AppCompatActivity
     }
 
     private void saveBoard() {
-        String boardtype = priceBoard.getMessageBoardType().getNumberOfCascades() + "|" +
-                priceBoard.getPriceBoardType().getNumberOfCascades();
-//        SharedPreferences.Editor editor = preferences.edit();
-//        editor.putInt(DetailFragment.NUM_OF_MESSAGES_KEY, numberOfMessages);
-//        editor.apply();
-
         ContentValues contentValues = new ContentValues();
         contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_NAME, priceBoard.getName());
         contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_IP_ADDRESS, priceBoard.getIpAddress());
-        contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_BOARD_TYPE, boardtype);
+        contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_BOARD_TYPE, priceBoard.createBoardType());
         contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_NUMBER_OF_MSG, priceBoard.getNumberOfMessages());
         SmartDisplayService.insertNewTask(this, contentValues);
 
     }
 
     private void updateBoard() {
-        String boardtype = priceBoard.getMessageBoardType().getNumberOfCascades() + "|" +
-                priceBoard.getPriceBoardType().getNumberOfCascades();
         ContentValues contentValues = new ContentValues();
         contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_NAME, priceBoard.getName());
         contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_IP_ADDRESS, priceBoard.getIpAddress());
-        contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_BOARD_TYPE, boardtype);
+        contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_BOARD_TYPE, priceBoard.createBoardType());
         contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_NUMBER_OF_MSG, priceBoard.getNumberOfMessages());
         SmartDisplayService.updateTask(this, SmartDisplayContract.SmartDisplayColumns.buildDisplayUri(priceBoard.getId()), contentValues);
     }
 
 
     @Override
-    public void onMessageDialogPositiveButtonClicked(DialogFragment dialog, int messageSpinnerPositon, int numberOfMessages, int boardType, int priceSpinnerPosition, long boardId, boolean isEditing) {
-//        this.numberOfMessages = numberOfMessages;
+    public void onMessageDialogPositiveButtonClicked(DialogFragment dialog, PriceBoard priceBoard, boolean isEditing ){
+        this.priceBoard = priceBoard;
 
-
-        if(boardType == EditTextDialog.EATRIES_TYPE){
-
-//            this.priceBoardType = 3;
-            try {
-                priceBoard.setPriceBoardType(PriceBoard.getPriceBoardTypeFromInt(3));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        //this.messageBoardType = messageSpinnerPositon;
-
-        priceBoard.setNumberOfMessages(numberOfMessages);
-        try {
-            priceBoard.setMessageBoardType(MessageBoard.getMessageBoardTypeFromInt(messageSpinnerPositon));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        if (boardType == EditTextDialog.FILLING_STATION_TYPE || boardType == EditTextDialog.CUSTOM_TYPE) {
-            PriceSelectDisplayDialog priceSelectDisplayDialog = PriceSelectDisplayDialog.getInstance(priceSpinnerPosition, isEditing);
+        if (priceBoard.getPriceBoardType() != PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE) {
+            PriceSelectDisplayDialog priceSelectDisplayDialog = PriceSelectDisplayDialog.getInstance(priceBoard, isEditing);
             priceSelectDisplayDialog.setCancelable(false);
             priceSelectDisplayDialog.show(getSupportFragmentManager(), "dialog");
         } else {
@@ -294,31 +256,12 @@ public class EritSmartDisplayActivity extends AppCompatActivity
 
 
     @Override
-    public void onDialogPositiveButtonClicked(DialogFragment dialog, String boardName, String boardIpAddress,
-                                              int messageBoardType, int numOfMessages, int priceSpinnerPositon, int boardType,
-                                              long boardId, boolean isEditing) {
-        /*this.boardName = boardName;
-        this.boardIp = boardIpAddress;
+    public void onDialogPositiveButtonClicked(DialogFragment dialog, PriceBoard priceBoard,  boolean isEditing) {
+        this.priceBoard = priceBoard;
 
-        this.numberOfMessages = numOfMessages;
+        Log.i(TAG, "onDialogPositiveButtonClicked: Num  " + priceBoard.getNumberOfMessages());
 
-        this.messageBoardType = messageBoardType;*/
-
-        priceBoard.setName(boardName);
-        priceBoard.setIpAddress(boardIpAddress);
-        priceBoard.setNumberOfMessages(numOfMessages);
-        priceBoard.setId(boardId);
-        try {
-            priceBoard.setMessageBoardType(MessageBoard.getMessageBoardTypeFromInt(numOfMessages));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Log.i(TAG, "onDialogPositiveButtonClicked: Num  " + numOfMessages);
-
-        MessageSelectDisplayDialog messageSelectDisplayDialog = MessageSelectDisplayDialog.getInstance(isEditing, messageBoardType,
-                numOfMessages, priceSpinnerPositon,
-                boardType, boardId);
+        MessageSelectDisplayDialog messageSelectDisplayDialog = MessageSelectDisplayDialog.getInstance(priceBoard, isEditing);
         messageSelectDisplayDialog.show(getSupportFragmentManager(), "msg");
     }
 

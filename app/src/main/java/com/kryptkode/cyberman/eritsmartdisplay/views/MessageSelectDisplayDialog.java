@@ -17,6 +17,8 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.kryptkode.cyberman.eritsmartdisplay.R;
+import com.kryptkode.cyberman.eritsmartdisplay.models.MessageBoard;
+import com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoard;
 
 /**
  * Created by Cyberman on 8/22/2017.
@@ -24,11 +26,7 @@ import com.kryptkode.cyberman.eritsmartdisplay.R;
 
 public class MessageSelectDisplayDialog extends DialogFragment implements AdapterView.OnItemSelectedListener {
     public static final String IS_IN_EDIT_MODE_KEY = "positive_button";
-    public static final String BOARD_TYPE_KEY = "board_type";
-    public static final String MESSAGE_SPINNER_POSITION_KEY = "spinner_position";
-    public static final String NUMBER_OF_MESSAGE_KEY = "num_of_mgsg";
-    public static final String PRICE_SPINNER_POSITION_KEY = "price_key";
-    public static final String BOARD_ID_KEY = "ID_";
+    public static final String PRICE_TYPE = "board_type";
 
     private SelectDisplayDialogListener listener;
 
@@ -39,30 +37,21 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
 
 
     private boolean isEditing;
-    private int boardType;
-    private int numberOfMessages;
-    private int messageSpinnerPositon;
-    private int priceSpinnerPosition;
-    private long boardId;
+    private PriceBoard priceBoard;
 
 
     public interface SelectDisplayDialogListener {
-        void onMessageDialogPositiveButtonClicked(DialogFragment dialog, int messageSpinnerPositon, int numberOfMessages, int boardType, int priceSpinnerPosition, long boardId, boolean isEditing);
+        void onMessageDialogPositiveButtonClicked(DialogFragment dialog, PriceBoard priceBoard, boolean isEditing);
     }
 
-    public static MessageSelectDisplayDialog getInstance(boolean isEditing, int messageSpinnerPositon,
-                                                         int numberOfMessages, int boardType, int priceSpinnerPosition, long boardId) {
-        MessageSelectDisplayDialog priceSelectDisplayDialog = new MessageSelectDisplayDialog();
+    public static MessageSelectDisplayDialog getInstance(PriceBoard priceBoard, boolean isEditing) {
+        MessageSelectDisplayDialog messageSelectDisplayDialog = new MessageSelectDisplayDialog();
 
         Bundle bundle = new Bundle();
         bundle.putBoolean(IS_IN_EDIT_MODE_KEY, isEditing);
-        bundle.putInt(MESSAGE_SPINNER_POSITION_KEY, messageSpinnerPositon);
-        bundle.putInt(NUMBER_OF_MESSAGE_KEY, numberOfMessages);
-        bundle.putInt(BOARD_TYPE_KEY, boardType);
-        bundle.putInt(PRICE_SPINNER_POSITION_KEY, priceSpinnerPosition);
-        bundle.putLong(BOARD_ID_KEY, boardId);
-        priceSelectDisplayDialog.setArguments(bundle);
-        return priceSelectDisplayDialog;
+        bundle.putParcelable(PRICE_TYPE, priceBoard);
+        messageSelectDisplayDialog.setArguments(bundle);
+        return messageSelectDisplayDialog;
     }
 
     @Override
@@ -87,11 +76,7 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
         isEditing = bundle.getBoolean(IS_IN_EDIT_MODE_KEY);
-        boardType = bundle.getInt(BOARD_TYPE_KEY);
-        numberOfMessages = bundle.getInt(NUMBER_OF_MESSAGE_KEY);
-        messageSpinnerPositon = bundle.getInt(MESSAGE_SPINNER_POSITION_KEY);
-        priceSpinnerPosition = bundle.getInt(PRICE_SPINNER_POSITION_KEY);
-        boardId = bundle.getLong(BOARD_ID_KEY);
+        priceBoard = bundle.getParcelable(PRICE_TYPE);
 
     }
 
@@ -111,19 +96,19 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
         alertDialogBuilder.setTitle(isEditing ? R.string.edit_boad : R.string.add_new_baord);
         alertDialogBuilder.setMessage("Message Board Type");
         alertDialogBuilder.setCancelable(false);
-        alertDialogBuilder.setPositiveButton(boardType == EditTextDialog.EATRIES_TYPE ? getString(R.string.dialog_done) : getString(R.string.dialog_next), new DialogInterface.OnClickListener() {
+        alertDialogBuilder.setPositiveButton(priceBoard.getPriceBoardType() == PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE? getString(R.string.dialog_done) : getString(R.string.dialog_next), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                numberOfMessages = Integer.parseInt(textInputEditText.getText().toString());
-                listener.onMessageDialogPositiveButtonClicked(MessageSelectDisplayDialog.this, messageSpinnerPositon, numberOfMessages,priceSpinnerPosition,  boardType, boardId, isEditing);
+                 priceBoard.setNumberOfMessages(Integer.parseInt(textInputEditText.getText().toString()));
+                listener.onMessageDialogPositiveButtonClicked(MessageSelectDisplayDialog.this, priceBoard, isEditing);
 
             }
         });
 
         if (isEditing) {
-            textInputEditText.setText(String.valueOf(numberOfMessages));
-            appCompatSpinner.setSelection(messageSpinnerPositon, true);
+            textInputEditText.setText(String.valueOf(priceBoard.getNumberOfMessages()));
+            appCompatSpinner.setSelection(priceBoard.getMessageBoardType().getNumberOfCascades() - 1, true);
             alertDialogBuilder.setNeutralButton(R.string.save, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -151,8 +136,12 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (position > 0) {
-            messageSpinnerPositon = position + 1;
-            setImageResource(messageSpinnerPositon);
+            try {
+                priceBoard.setMessageBoardType(MessageBoard.getMessageBoardTypeFromInt(position + 1));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            setImageResource(priceBoard.getMessageBoardType().getNumberOfCascades());
             dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(true);
         } else {
             showToast();
@@ -162,7 +151,7 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        messageSpinnerPositon = -100;
+
     }
 
 

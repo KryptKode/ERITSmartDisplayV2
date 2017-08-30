@@ -16,15 +16,15 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.kryptkode.cyberman.eritsmartdisplay.R;
+import com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoard;
 
 /**
  * Created by Cyberman on 8/22/2017.
  */
 
 public class PriceSelectDisplayDialog extends DialogFragment implements AdapterView.OnItemSelectedListener {
-    public static final String BOARD_TYPE_KEY = "board_type";
-    public static final String POSITIVE_BUTTOn_KEY = "positive_button";
-    public static final String IS_NEXT_KEY = "next";
+    public static final String IS_IN_EDIT_MODE_KEY = "board_type";
+    public static final String BOARD_KEY = "bpard";
 
     private PriceSelectDisplayDialogListener listener;
 
@@ -34,19 +34,18 @@ public class PriceSelectDisplayDialog extends DialogFragment implements AdapterV
 
     private boolean isEditing;
     private boolean hasUserSelected;
-    private int priceSpinnerPosition;
-
+    private PriceBoard priceBoard;
 
     public interface PriceSelectDisplayDialogListener {
-        void onPriceDialogPositiveButtonClicked(DialogFragment dialog, int priceSpinnerPosition, boolean isEditing);
+        void onPriceDialogPositiveButtonClicked(DialogFragment dialog, PriceBoard priceBoard, boolean isEditing);
     }
 
-    public static PriceSelectDisplayDialog getInstance(int priceSpinnerPosition,  boolean isEditing) {
+    public static PriceSelectDisplayDialog getInstance(PriceBoard priceBoard,  boolean isEditing) {
         PriceSelectDisplayDialog priceSelectDisplayDialog = new PriceSelectDisplayDialog();
 
         Bundle bundle = new Bundle();
-        bundle.putInt(BOARD_TYPE_KEY, priceSpinnerPosition);
-        bundle.putBoolean(POSITIVE_BUTTOn_KEY, isEditing);
+        bundle.putParcelable(BOARD_KEY, priceBoard);
+        bundle.putBoolean(IS_IN_EDIT_MODE_KEY, isEditing);
         priceSelectDisplayDialog.setArguments(bundle);
         return priceSelectDisplayDialog;
     }
@@ -72,8 +71,8 @@ public class PriceSelectDisplayDialog extends DialogFragment implements AdapterV
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
-        isEditing = bundle.getBoolean(POSITIVE_BUTTOn_KEY);
-        priceSpinnerPosition = bundle.getInt(BOARD_TYPE_KEY);
+        isEditing = bundle.getBoolean(IS_IN_EDIT_MODE_KEY);
+        priceBoard = bundle.getParcelable(BOARD_KEY);
 
     }
 
@@ -95,7 +94,7 @@ public class PriceSelectDisplayDialog extends DialogFragment implements AdapterV
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(hasUserSelected){
-                    listener.onPriceDialogPositiveButtonClicked(PriceSelectDisplayDialog.this, priceSpinnerPosition, isEditing);
+                    listener.onPriceDialogPositiveButtonClicked(PriceSelectDisplayDialog.this, priceBoard, isEditing);
                 }else {
                     showToast();
                 }
@@ -103,7 +102,7 @@ public class PriceSelectDisplayDialog extends DialogFragment implements AdapterV
         });
 
         if(isEditing){
-            appCompatSpinner.setSelection(priceSpinnerPosition - 1, true);
+            appCompatSpinner.setSelection(priceBoard.getPriceBoardType().getNumberOfCascades(), true);
             alertDialogBuilder.setNeutralButton(R.string.save, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -125,9 +124,13 @@ public class PriceSelectDisplayDialog extends DialogFragment implements AdapterV
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (position > 0) {
-            priceSpinnerPosition = position;
-            setImageResource(priceSpinnerPosition);
-            hasUserSelected = true;
+            try {
+                priceBoard.setPriceBoardType(PriceBoard.getPriceBoardTypeFromInt( position));
+                setImageResource(priceBoard.getPriceBoardType().getNumberOfCascades());
+                hasUserSelected = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
            showToast();
         }
@@ -135,7 +138,7 @@ public class PriceSelectDisplayDialog extends DialogFragment implements AdapterV
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-        priceSpinnerPosition = -100;
+
     }
 
 

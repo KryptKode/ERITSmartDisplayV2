@@ -1,6 +1,7 @@
 package com.kryptkode.cyberman.eritsmartdisplay.models;
 
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -32,7 +33,9 @@ public class SmartDisplay implements Parcelable {
     public SmartDisplay(){
         //empty constructor
     }
-
+    public Uri buildBoardUri(){
+        return SmartDisplayColumns.buildDisplayUri(this.getId());
+    }
 
     public SmartDisplay(Cursor cursor){
         this.id = SmartDisplayContract.getColumnLong(cursor, SmartDisplayColumns._ID);
@@ -88,15 +91,4 @@ public class SmartDisplay implements Parcelable {
         this.ipAddress = in.readString();
     }
 
-    public static final Creator<SmartDisplay> CREATOR = new Creator<SmartDisplay>() {
-        @Override
-        public SmartDisplay createFromParcel(Parcel source) {
-            return new SmartDisplay(source);
-        }
-
-        @Override
-        public SmartDisplay[] newArray(int size) {
-            return new SmartDisplay[size];
-        }
-    };
 }

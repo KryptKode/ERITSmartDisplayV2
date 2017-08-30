@@ -1,11 +1,15 @@
 package com.kryptkode.cyberman.eritsmartdisplay.models;
 
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Parcel;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract;
 import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract.SmartDisplayColumns;
+
+import java.util.TreeMap;
 
 /**
  * Created by Cyberman on 8/9/2017.
@@ -13,9 +17,11 @@ import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract.SmartDi
 
 public class MessageBoard extends SmartDisplay {
     public static final String TAG = MessageBoard.class.getSimpleName();
+    public static final String MSG = "//M";
     private String messageString;
     private int numberOfMessages;
     private MessageBoardType messageBoardType;
+    private TreeMap<String, String> messagesMap;
 
     public MessageBoard(long id, String name, String ipAddress, String messageString, int numberOfMessages, MessageBoardType messageBoardType) {
         super(id, name, ipAddress);
@@ -24,14 +30,23 @@ public class MessageBoard extends SmartDisplay {
         this.numberOfMessages = numberOfMessages;
     }
 
-    public MessageBoard( String name, String ipAddress, MessageBoardType messageBoardType) {
-        super( name, ipAddress);
+    public MessageBoard(String name, String ipAddress, MessageBoardType messageBoardType) {
+        super(name, ipAddress);
         this.messageBoardType = messageBoardType;
     }
 
-    public MessageBoard(){
+    public MessageBoard() {
 
     }
+
+    public TreeMap<String, String> getMessagesMap() {
+        return messagesMap;
+    }
+
+    public void setMessagesMap(TreeMap<String, String> messagesMap) {
+        this.messagesMap = messagesMap;
+    }
+
 
     public int getNumberOfMessages() {
         return numberOfMessages;
@@ -40,6 +55,7 @@ public class MessageBoard extends SmartDisplay {
     public void setNumberOfMessages(int numberOfMessages) {
         this.numberOfMessages = numberOfMessages;
     }
+
 
     public MessageBoard(Cursor cursor) throws Exception {
         super(cursor);
@@ -50,6 +66,9 @@ public class MessageBoard extends SmartDisplay {
         Log.i(TAG, "MessageBoard: " + num);
         this.messageBoardType = getMessageBoardTypeFromInt(num);
         this.numberOfMessages = SmartDisplayContract.getColumnInt(cursor, SmartDisplayColumns.COLUMN_NUMBER_OF_MSG);
+        if (!TextUtils.isEmpty(messageString)) {
+            this.messagesMap = DisplayBoardHelpers.parseMessageString(this.messageString, this.numberOfMessages);
+        }
 
     }
 
@@ -60,8 +79,14 @@ public class MessageBoard extends SmartDisplay {
     public void setMessageString(String messageString) {
         this.messageString = messageString;
     }
+
+    public String createMessageSendFormat(){
+        return DisplayBoardHelpers.createMessageSendFormat(this.messagesMap);
+    }
+
+
     public static MessageBoardType getMessageBoardTypeFromInt(int code) throws Exception {
-        switch (code){
+        switch (code) {
             case (2):
                 return MessageBoardType.MESSAGE_BOARD_TYPE_TWO;
             case (3):
@@ -87,7 +112,6 @@ public class MessageBoard extends SmartDisplay {
     }
 
 
-
     public MessageBoardType getMessageBoardType() {
         return messageBoardType;
     }
@@ -96,7 +120,7 @@ public class MessageBoard extends SmartDisplay {
         this.messageBoardType = messageBoardType;
     }
 
-    public enum MessageBoardType{
+    public enum MessageBoardType {
         MESSAGE_BOARD_TYPE_TWO(2),
         MESSAGE_BOARD_TYPE_THREE(3),
         MESSAGE_BOARD_TYPE_FOUR(4),
@@ -108,6 +132,7 @@ public class MessageBoard extends SmartDisplay {
         MESSAGE_BOARD_TYPE_TEN(10);
 
         private int numberOfCascades;
+
         MessageBoardType(int numberOfCascades) {
             this.numberOfCascades = numberOfCascades;
         }
@@ -116,7 +141,6 @@ public class MessageBoard extends SmartDisplay {
             return numberOfCascades;
         }
     }
-
 
     @Override
     public int describeContents() {
@@ -127,27 +151,29 @@ public class MessageBoard extends SmartDisplay {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(this.messageString);
+        dest.writeInt(this.numberOfMessages);
         dest.writeInt(this.messageBoardType == null ? -1 : this.messageBoardType.ordinal());
+        dest.writeSerializable(this.messagesMap);
     }
 
     protected MessageBoard(Parcel in) {
         super(in);
         this.messageString = in.readString();
+        this.numberOfMessages = in.readInt();
         int tmpMessageBoardType = in.readInt();
         this.messageBoardType = tmpMessageBoardType == -1 ? null : MessageBoardType.values()[tmpMessageBoardType];
+        this.messagesMap = (TreeMap<String, String>) in.readSerializable();
     }
 
+    public static final Creator<MessageBoard> CREATOR = new Creator<MessageBoard>() {
+        @Override
+        public MessageBoard createFromParcel(Parcel source) {
+            return new MessageBoard(source);
+        }
 
-    public long getMessageId() {
-        return super.getId();
-    }
-
-    public String getMessageIpAddress() {
-        return super.getIpAddress();
-    }
-
-    public String getMessageName() {
-        return super.getName();
-    }
-
+        @Override
+        public MessageBoard[] newArray(int size) {
+            return new MessageBoard[size];
+        }
+    };
 }

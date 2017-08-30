@@ -215,29 +215,32 @@
             </LinearLayout>
 
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
 
-                <ProgressBar
-                    android:id="@+id/loading_indicator"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:layout_centerInParent="true"
-                    android:visibility="invisible" />
-
-                <TextView
-                    android:id="@+id/tv_loading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/loading_indicator"
-                    android:layout_centerInParent="true"
-                    android:text="@string/loading"
-                    android:visibility="invisible" />
-
-            </RelativeLayout>
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:id="@+id/loading_indicator"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_centerInParent="true"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/tv_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/loading_indicator"
+            android:layout_centerInParent="true"
+            android:textColor="@color/colorAccent"
+            android:text="@string/loading"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
 
 </FrameLayout>

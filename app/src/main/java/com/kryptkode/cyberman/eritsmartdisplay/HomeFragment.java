@@ -23,6 +23,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.kryptkode.cyberman.eritsmartdisplay.adapters.HomeAdapter;
 import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract;
@@ -114,16 +115,18 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        PriceBoard priceBoard = new PriceBoard();
         Intent intent = new Intent(getContext(), AddNewDisplayActivity.class);
         if (id == R.id.action_add_filling_station_display) {
             /*intent.putExtra(AddNewDisplayActivity.EXTRA_INT, 1);
             startActivity(intent);*/
-            EditTextDialog editTextDialog = EditTextDialog.getInstance(null, null, false, EditTextDialog.FILLING_STATION_TYPE);
+            EditTextDialog editTextDialog = EditTextDialog.getInstance(priceBoard, false);
             editTextDialog.setCancelable(false);
             editTextDialog.show(getChildFragmentManager(), "edit");
             return true;
         } else if (id == R.id.action_add_resturant_display) {
-            EditTextDialog editTextDialog = EditTextDialog.getInstance(null, null, false, EditTextDialog.EATRIES_TYPE);
+            priceBoard.setPriceBoardType(PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE);
+            EditTextDialog editTextDialog = EditTextDialog.getInstance(priceBoard, false);
             editTextDialog.setCancelable(false);
             editTextDialog.show(getChildFragmentManager(), "edit");
             return true;
@@ -171,37 +174,23 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
     /*Methods for the adapter listener*/
     @Override
     public void onDisplayOverflowClicked(final PriceBoard priceBoard, View view) {
-        final long displayId = priceBoard.getPriceId();
         PopupMenu popupMenu = new PopupMenu(getContext(), view);
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Uri uri = SmartDisplayContract.SmartDisplayColumns.buildDisplayUri(displayId);
                 int id = item.getItemId();
                 switch (id) {
                     case R.id.action_edit:
-                        /*Intent intent = new Intent(getContext(), AddNewDisplayActivity.class);
-                        intent.setData(uri);
-                        startActivity(intent);
-                        return true;*/
-
-
-                        EditTextDialog editTextDialog = EditTextDialog.getInstance(priceBoard.getPriceName(),
-                                priceBoard.getPriceIpAddress(),
-                                true,priceBoard.getMessageBoardType().getNumberOfCascades() - 1 ,
-                                priceBoard.getNumberOfMessages(), priceBoard.getPriceBoardType().getNumberOfCascades(),
-                                priceBoard.getPriceBoardType() == PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE ?
-                                        EditTextDialog.EATRIES_TYPE : EditTextDialog.FILLING_STATION_TYPE, priceBoard.getId());
+                        EditTextDialog editTextDialog = EditTextDialog.getInstance(priceBoard, true);
                         editTextDialog.setCancelable(false);
                         editTextDialog.show(getChildFragmentManager(), "");
 
                         return true;
 
                     case R.id.action_delete:
-                        SmartDisplayService.deleteTask(getContext(), uri);
-                        //createLoader();
+                        SmartDisplayService.deleteTask(getContext(), priceBoard.buildBoardUri());
                         Log.i(TAG, "onMenuItemClick:  CALLED LODER");
-                        //Toast.makeText(getContext(), "Deleted", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Deleted", Toast.LENGTH_LONG).show();
                         return true;
                     default:
                         return false;

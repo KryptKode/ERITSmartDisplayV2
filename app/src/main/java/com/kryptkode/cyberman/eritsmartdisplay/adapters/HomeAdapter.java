@@ -44,16 +44,16 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         TextView displayName = holder.displayName;
         ImageButton displayOverflowButton = holder.displayOverflowButton;
         Log.i(TAG, String.valueOf("onBindViewHolder: " + (priceBoard == null)));
-        Log.i(TAG, "onBindViewHolder: KJJK " + priceBoard.getPriceName());
+        Log.i(TAG, "onBindViewHolder: KJJK " + priceBoard.getName());
         //set the display name to the name if the user entered it, else, use the IP
         if (priceBoard != null) {
             if (!TextUtils.isEmpty(priceBoard.getName())) {
-                displayName.setText(priceBoard.getPriceName());
-                Log.i(TAG, "onBindViewHolder: PRICE NAME " + priceBoard.getPriceName());
+                displayName.setText(priceBoard.getName());
+                Log.i(TAG, "onBindViewHolder: PRICE NAME " + priceBoard.getName());
                 Log.i(TAG, "onBindViewHolder: NAME " + displayName.getText());
             }else{
-                displayName.setText(priceBoard.getPriceIpAddress());
-                Log.i(TAG, "onBindViewHolder: PRICE IP " + priceBoard.getPriceIpAddress());
+                displayName.setText(priceBoard.getIpAddress());
+                Log.i(TAG, "onBindViewHolder: PRICE IP " + priceBoard.getIpAddress());
                 Log.i(TAG, "onBindViewHolder: IP" + displayName.getText());
             }
             holder.itemView.setTag(priceBoard);
@@ -79,7 +79,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
             PriceBoard priceBoard = new PriceBoard(mCursor);
             Log.i(TAG, "getItem: "+ priceBoard.getName());
             Log.i(TAG, "getItem: "+ priceBoard.getIpAddress());
-            Log.i(TAG, "getItem: "+ priceBoard.getPriceId());
+            Log.i(TAG, "getItem: "+ priceBoard.getId());
             return priceBoard;
         } catch (Exception e) {
             e.printStackTrace();
