@@ -34,10 +34,13 @@ import android.widget.Toast;
 
 import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract;
 import com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoardData;
+import com.kryptkode.cyberman.eritsmartdisplay.views.EditTextDialog;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.List;
+
+import static com.kryptkode.cyberman.eritsmartdisplay.models.MessageBoardData.MSG;
 
 
 /**
@@ -49,8 +52,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private static final int DETAIL_LOADER_ID = 400;
     public static final String MY_PREFS = "prefs";
     public static final String NUM_OF_MESSAGES_KEY = "_Key";
-    public static final String MSG = "message";
-
+    public static final String BOARD_TYPE_KEY = "board_type";
 
     private AppCompatSpinner messagesSpinner;
     private EditText messageEditText;
@@ -65,10 +67,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private TextView loadingIndicatorTextView;
     private FloatingActionButton fab;
 
-    private SharedPreferences preferences;
     private Uri uri;
     private TreeMap<String, String> messagesTreeMap;
+    private TreeMap<String, String> priceTreeMap;
     private int numOfMessages;
+    private int boardType;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -95,10 +98,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     }
 
-    public static DetailFragment getInstance(Uri uri) {
+    public static DetailFragment getInstance(Uri uri, int boardType) {
         DetailFragment detailFragment = new DetailFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(BUNDLE_KEY, uri);
+        bundle.putInt(BOARD_TYPE_KEY, boardType);
         detailFragment.setArguments(bundle);
         return detailFragment;
     }
@@ -109,6 +113,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
         uri = bundle.getParcelable(BUNDLE_KEY);
+        boardType = bundle.getInt(BOARD_TYPE_KEY);
         createLoader();
     }
 
@@ -137,7 +142,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         loadingIndicatorTextView = (TextView) view.findViewById(R.id.tv_loading);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(fabClickListener);
-        preferences = getContext().getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE);
         messagesTreeMap = new TreeMap<>();
         return view;
     }
@@ -145,7 +149,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private View.OnClickListener fabClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            DetailFragmentHelper.saveMessages(getContext(), uri, messagesTreeMap);
+            DetailFragmentHelper.saveMessages(getContext(), uri, messagesTreeMap, createPriceTreeMap(), boardType == EditTextDialog.FILLING_STATION_TYPE);
             Snackbar.make(getView().findViewById(R.id.fragment_root), "Saving...", Snackbar.LENGTH_LONG).show();
 
         }
@@ -263,7 +267,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         data.moveToFirst();
         numOfMessages = SmartDisplayContract.getColumnInt(data, SmartDisplayContract.SmartDisplayColumns.COLUMN_NUMBER_OF_MSG);
         showPriceData(DetailFragmentHelper.parsePriceString(data));
-        addToMap(DetailFragmentHelper.getMessages(data));
+        addToMap(DetailFragmentHelper.getMessages(data, numOfMessages));
         setUpSpinner();
         Log.i(TAG, "onLoadFinished: " + messagesTreeMap.size());
 
@@ -298,5 +302,17 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         for (String key : map.keySet()) {
             messagesTreeMap.put(key, map.get(key));
         }
+    }
+
+    private TreeMap<String, String> createPriceTreeMap(){
+        TreeMap<String, String> priceTreeMap = new TreeMap<>();
+        String pmsData  = pmsThreeEditText.getText().toString() + ":" + pmsTwoEditText.getText().toString() + " ";
+        String dpkData  = dpkThreeEditText.getText().toString() + ":" + dpkTwoEditText.getText().toString()+ " ";
+        String agoData  = agoThreeEditText.getText().toString() + ":" + agoTwoEditText.getText().toString()+ " ";
+        priceTreeMap.put(PriceBoardData.PMS, pmsData );
+        priceTreeMap.put(PriceBoardData.DPK, dpkData );
+        priceTreeMap.put(PriceBoardData.AGO, agoData );
+
+       return priceTreeMap;
     }
 }

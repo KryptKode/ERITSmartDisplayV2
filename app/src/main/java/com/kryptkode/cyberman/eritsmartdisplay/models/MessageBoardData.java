@@ -3,24 +3,30 @@ package com.kryptkode.cyberman.eritsmartdisplay.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
+import java.util.TreeMap;
 
 /**
  * Created by Cyberman on 8/25/2017.
  */
 
 public class MessageBoardData implements Parcelable {
+    public static final String MSG = "//M";
+    private TreeMap<String, String > messagesMap = new TreeMap<>();
 
-    ArrayList<String> messagesList = new ArrayList<>();
-
-    public ArrayList<String> getMessagesList() {
-        return messagesList;
+    public TreeMap<String, String > getMessagesList() {
+        return messagesMap;
     }
 
-    public void setMessagesList(ArrayList<String> messagesList) {
-        this.messagesList = messagesList;
+    public void setMessagesList(TreeMap<String, String > messagesMap) {
+        this.messagesMap = messagesMap;
     }
 
+    public MessageBoardData(TreeMap<String, String> messagesMap) {
+        this.messagesMap = messagesMap;
+    }
+
+    public MessageBoardData() {
+    }
 
     @Override
     public int describeContents() {
@@ -29,17 +35,14 @@ public class MessageBoardData implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringList(this.messagesList);
-    }
-
-    public MessageBoardData() {
+        dest.writeSerializable(this.messagesMap);
     }
 
     protected MessageBoardData(Parcel in) {
-        this.messagesList = in.createStringArrayList();
+        this.messagesMap = (TreeMap<String, String>) in.readSerializable();
     }
 
-    public static final Parcelable.Creator<MessageBoardData> CREATOR = new Parcelable.Creator<MessageBoardData>() {
+    public static final Creator<MessageBoardData> CREATOR = new Creator<MessageBoardData>() {
         @Override
         public MessageBoardData createFromParcel(Parcel source) {
             return new MessageBoardData(source);

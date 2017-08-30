@@ -3,14 +3,22 @@ package com.kryptkode.cyberman.eritsmartdisplay.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.TreeMap;
+
 /**
  * Created by Cyberman on 8/25/2017.
  */
 
 public class PriceBoardData implements Parcelable {
+    public static final String PMS = "//P";
+    public static final String DPK = "//D";
+    public static final String AGO = "//A";
+
     private String pmsPrice;
     private String dpkPrice;
     private String agoPrice;
+
+
 
     public PriceBoardData(String pmsPrice, String dpkPrice, String agoPrice) {
         this.pmsPrice = pmsPrice;

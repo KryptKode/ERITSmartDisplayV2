@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract;
-import com.kryptkode.cyberman.eritsmartdisplay.models.MessageBoard;
 import com.kryptkode.cyberman.eritsmartdisplay.models.MessageBoardData;
 import com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoardData;
 
@@ -21,31 +20,46 @@ import org.json.JSONObject;
 import java.util.TreeMap;
 
 import static com.kryptkode.cyberman.eritsmartdisplay.DetailFragment.TAG;
+import static com.kryptkode.cyberman.eritsmartdisplay.models.MessageBoardData.MSG;
+import static com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoardData.AGO;
+import static com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoardData.DPK;
+import static com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoardData.PMS;
 
 /**
  * Created by Cyberman on 8/25/2017.
  */
 
 public class DetailFragmentHelper {
-    public static final String PMS = "//P";
-    public static final String DPK = "//D";
-    public static final String AGO = "//A";
-    public static final String MSG = "//M";
+
     public static final String MESSAGE = "message";
     public static final String MESSAGES = "messages";
 
 
-    public static void parseCursor(Cursor cursor) {
-        String messages = SmartDisplayContract.getColumnString(cursor,
-                SmartDisplayContract.SmartDisplayColumns.COLUMN_MESSAGE_STRING);
-        String prices = SmartDisplayContract.getColumnString(cursor,
-                SmartDisplayContract.SmartDisplayColumns.COLUMN_PRICE_BOARD_STRING);
+    private static MessageBoardData parseMessageString(String data, int numOfMessagees) {
+        TreeMap<String , String> messagesMap  = new TreeMap<>();
+        int index1, index2;
+        for (int i = 1; i <= numOfMessagees; i++) {
+            if (i == numOfMessagees){
+                index1 = data.indexOf(MSG + i); // //M1
+                if (index1 != -1){
+                    messagesMap.put(MSG + i, data.substring(index1 + 4, data.length()));
+                    Log.i(TAG, "parseMessageString: " + index1);
+                    Log.i(TAG, "parseMessageString: " + messagesMap.get(MSG + i));
+                }
+            }else{
 
-    }
+                index1 = data.indexOf(MSG + i); // //M1
+                index2 = data.indexOf(MSG + (i + 1)); // //M2
 
-    private MessageBoardData parseMessageString(String data, int numOfMessagees) {
+                if (index1 != -1 && index2 != -1) {
+                   messagesMap.put(MSG + i, data.substring(index1 + 4, index2));
+                    Log.i(TAG, "parseMessageString: " + messagesMap.get(MSG + i));
+                }
+            }
 
-        return new MessageBoardData();
+        }
+        Log.i(TAG, "parseMessageString: " + messagesMap.get(MSG + 1));
+        return new MessageBoardData(messagesMap);
     }
 
     public static PriceBoardData parsePriceString(Cursor cursor) {
@@ -57,21 +71,22 @@ public class DetailFragmentHelper {
         String agoData = "000:00";
         if (!TextUtils.isEmpty(data)) {
 
-            index1 = data.indexOf(PMS);
+            index1 = data.indexOf(AGO);
             index2 = data.indexOf(DPK);
             if (index1 != -1 && index2 != -1) {
                 pmsData = data.substring(index1 + 3, index2);
             }
 
             index1 = data.indexOf(DPK);
-            index2 = data.indexOf(AGO);
+            index2 = data.indexOf(PMS);
             if (index1 != -1 && index2 != -1) {
                 dpkData = data.substring(index1 + 3, index2);
             }
 
-            index2 = data.indexOf(AGO);
+            index2 = data.indexOf(PMS);
             if (index2 != -1) {
-                agoData = data.substring(index2 + 3, index2 + 10);
+                Log.i(TAG, "parsePriceString: " + index2);
+                agoData = data.substring(index2 + 3,data.length());
             }
         }
 
@@ -86,15 +101,17 @@ public class DetailFragmentHelper {
                 view.getWindowToken(), 0);
     }
 
-    public static String createSendFormat(TreeMap<String, String> messagesTreeMap) {
+    public static String createMessageSendFormat(TreeMap<String, String> messagesTreeMap) {
         String messages = "";
-        for (int i = 1; i <= messagesTreeMap.size(); i++) {
-            messages += messages + MSG + i + " " + messagesTreeMap.get(MESSAGE + i);
+        for (String key: messagesTreeMap.keySet() ) {
+            messages += key + messagesTreeMap.get(key);
         }
         return messages;
     }
 
-    public static TreeMap<String, String> jsonToTreeMap(String json) {
+
+
+ /*   public static TreeMap<String, String> messagesJsonToTreeMap(String json) {
         TreeMap<String, String> messagesTreeMap = new TreeMap<>();
         if (!TextUtils.isEmpty(json)) {
             try {
@@ -103,7 +120,7 @@ public class DetailFragmentHelper {
                 for (int i = 1; i <= messagesJsonArray.length(); i++) {
                     JSONObject message = messagesJsonArray.getJSONObject(i - 1);
                     messagesTreeMap.put(MESSAGE + i, message.getString(MESSAGE + i));
-                    Log.i(TAG, "jsonToTreeMap: " + messagesTreeMap.size());
+                    Log.i(TAG, "messagesJsonToTreeMap: " + messagesTreeMap.size());
                 }
 
             } catch (JSONException e) {
@@ -112,9 +129,9 @@ public class DetailFragmentHelper {
 
         }
         return messagesTreeMap;
-    }
+    }*/
 
-    public static String hashMapToJson(TreeMap<String, String> messagesTreeMap) {
+   /* public static String hashMapToJson(TreeMap<String, String> messagesTreeMap) {
         JSONObject messagesJsonObject = new JSONObject();
         JSONArray messagesJsonArray = new JSONArray();
         int i = 0;
@@ -140,7 +157,10 @@ public class DetailFragmentHelper {
             e.printStackTrace();
         }
         return messagesJsonObject.toString();
-    }
+    }*/
+
+
+
 
     public static String generateDummyMessages(int i) {
         String[] messStrings = {"Cur lanista manducare?",
@@ -153,18 +173,24 @@ public class DetailFragmentHelper {
                 "The particle is more spacecraft now than green people. biological and pedantically colorful."
         };
 
-        return messStrings[i-1];
+        return messStrings[i - 1];
     }
 
-    public static TreeMap<String, String> getMessages(Cursor cursor){
-        return jsonToTreeMap(SmartDisplayContract.getColumnString(cursor,
-                SmartDisplayContract.SmartDisplayColumns.COLUMN_MESSAGE_STRING));
+    public static TreeMap<String, String> getMessages(Cursor cursor, int numberOfMessages) {
+        /*return messagesJsonToTreeMap(SmartDisplayContract.getColumnString(cursor,
+                SmartDisplayContract.SmartDisplayColumns.COLUMN_MESSAGE_STRING));*/
+        return parseMessageString(SmartDisplayContract.getColumnString(cursor,
+                SmartDisplayContract.SmartDisplayColumns.COLUMN_MESSAGE_STRING), numberOfMessages).getMessagesList();
     }
 
-    public static void saveMessages(Context context, Uri uri , TreeMap<String, String> messagesTreeMap) {
+    public static void saveMessages(Context context, Uri uri, TreeMap<String, String> messagesTreeMap, TreeMap<String, String> priceString, boolean isPriceType) {
         ContentValues contentValues = new ContentValues();
-        Log.i(TAG, "saveMessages: " + hashMapToJson(messagesTreeMap));
-        contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_MESSAGE_STRING, hashMapToJson(messagesTreeMap));
+        Log.i(TAG, "saveMessages: " + createMessageSendFormat(messagesTreeMap));
+        if(isPriceType){
+            Log.i(TAG, "saveMessages: " + createMessageSendFormat(priceString));
+            contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_PRICE_BOARD_STRING, createMessageSendFormat(priceString));
+        }
+        contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_MESSAGE_STRING, createMessageSendFormat(messagesTreeMap));
         SmartDisplayService.updateTask(context, uri, contentValues);
     }
 }

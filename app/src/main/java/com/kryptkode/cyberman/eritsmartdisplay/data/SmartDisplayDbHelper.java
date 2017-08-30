@@ -69,10 +69,10 @@ public class SmartDisplayDbHelper extends SQLiteOpenHelper {
         values.put(SmartDisplayColumns.COLUMN_NAME, "Demo Board X");
         values.put(SmartDisplayColumns.COLUMN_IP_ADDRESS, "192.168.43.135");
         values.put(SmartDisplayColumns.COLUMN_BOARD_TYPE, "2|2");
-        values.put(SmartDisplayColumns.COLUMN_NUMBER_OF_MSG, 14);
-        values.put(SmartDisplayColumns.COLUMN_MESSAGE_STRING, createDummyMessageJson());
+        values.put(SmartDisplayColumns.COLUMN_NUMBER_OF_MSG, 4);
+        values.put(SmartDisplayColumns.COLUMN_MESSAGE_STRING, "//M1 Hello //M2 Jerry //M3 Telnet //M4 Johnnnny");
         Log.i(TAG, "loadDummyData: " + values.get(SmartDisplayColumns.COLUMN_MESSAGE_STRING));
-        values.put(SmartDisplayColumns.COLUMN_PRICE_BOARD_STRING, " //P 197:00 //D 250:00 //A 150:00 ");
+        values.put(SmartDisplayColumns.COLUMN_PRICE_BOARD_STRING, "//A150:00//D250:00//P197:00");
 
         db.insertOrThrow(SmartDisplayColumns.DISPLAY_TABLE_NAME, null, values);
     }

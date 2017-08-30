@@ -164,8 +164,8 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
 
     /*Methods for the adapter listener*/
     @Override
-    public void onDisplayClicked(long id) {
-        HomeFragmentHelper.startDetailActivity(getContext(), id);
+    public void onDisplayClicked(PriceBoard priceBoard) {
+        HomeFragmentHelper.startDetailActivity(getContext(), priceBoard);
     }
 
     /*Methods for the adapter listener*/

@@ -56,7 +56,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
                 Log.i(TAG, "onBindViewHolder: PRICE IP " + priceBoard.getPriceIpAddress());
                 Log.i(TAG, "onBindViewHolder: IP" + displayName.getText());
             }
-            holder.itemView.setTag(priceBoard.getPriceId());
+            holder.itemView.setTag(priceBoard);
             displayOverflowButton.setTag(priceBoard);
         }
 
@@ -89,7 +89,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
 
 
     public interface HomeAdapterListener {
-        void onDisplayClicked(long  id);
+        void onDisplayClicked(PriceBoard priceBoard);
 
         void onDisplayOverflowClicked(PriceBoard priceBoard, View view);
     }
@@ -118,7 +118,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
             if (v == displayOverflowButton) {
                 homeAdapterListener.onDisplayOverflowClicked((PriceBoard) v.getTag(), v);
             } else {
-                    homeAdapterListener.onDisplayClicked((Long) v.getTag());
+                    homeAdapterListener.onDisplayClicked((PriceBoard) v.getTag());
             }
         }
     }
