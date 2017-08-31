@@ -41,6 +41,7 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
 
     private boolean isEditing;
     private PriceBoard priceBoard;
+    private boolean status;
 
 
     public interface SelectDisplayDialogListener {
@@ -111,8 +112,6 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
         });
 
         if (isEditing) {
-            textInputEditText.setText(String.valueOf(priceBoard.getNumberOfMessages()));
-            appCompatSpinner.setSelection(priceBoard.getMessageBoardType().getNumberOfCascades() - 1, true);
             alertDialogBuilder.setNeutralButton(R.string.save, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -135,6 +134,11 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
     public void onStart() {
         super.onStart();
         dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(false);
+
+        if(isEditing){
+            textInputEditText.setText(String.valueOf(priceBoard.getNumberOfMessages()));
+            appCompatSpinner.setSelection(priceBoard.getMessageBoardType().getNumberOfCascades() - 1, true);
+        }
     }
 
     @Override
@@ -179,7 +183,7 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
 
 
     private void showToast() {
-        Toast.makeText(getContext(), R.string.spinner_toast_select_one_type, Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), R.string.spinner_toast_select_one_type_show_msg, Toast.LENGTH_LONG).show();
     }
 
     //used to change the image resource or video for the proto_simutation of the display

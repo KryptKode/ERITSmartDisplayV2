@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <ListPreference
         android:dialogTitle="@string/sort_by"
         android:entries="@array/prefs_sort"
@@ -9,4 +10,13 @@
         android:defaultValue="@string/sort_default"
         android:summary="@string/sort_order_summary"
         android:title="@string/sort_order" />
+
+    <SwitchPreference
+        android:title="Automatically turn ON hotspot on startup"
+        android:switchTextOn="Turned ON"
+        android:switchTextOff="Turned OFF"
+        android:persistent="true"
+        android:defaultValue="ON"
+        />
+
 </PreferenceScreen>

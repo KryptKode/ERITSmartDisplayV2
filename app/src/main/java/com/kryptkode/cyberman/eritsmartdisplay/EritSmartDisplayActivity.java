@@ -2,6 +2,7 @@ package com.kryptkode.cyberman.eritsmartdisplay;
 
 import android.content.ContentValues;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -39,6 +40,7 @@ public class EritSmartDisplayActivity extends AppCompatActivity
 
     private PriceBoard priceBoard;
     private WifiHotspot wifiHotspot;
+    private boolean doubleBackToExitPressedOnce;
 
 
     @Override
@@ -75,15 +77,11 @@ public class EritSmartDisplayActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        int count = 0;
-        Toast toast;
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             FragmentManager fragmentManager = getSupportFragmentManager();
             if (fragmentManager.getBackStackEntryCount() > 0) {
-                super.onBackPressed();
-
                 Fragment fragment = fragmentManager.findFragmentByTag(FRAG_TAG);
                 if (fragment instanceof HomeFragment) {
                     currentPosition = 0;
@@ -96,12 +94,19 @@ public class EritSmartDisplayActivity extends AppCompatActivity
                 navigationView.getMenu().getItem(currentPosition).setChecked(true);
 
             } else {
-                count++;
-                toast = Toast.makeText(this, "Press again to exit", Toast.LENGTH_SHORT);
-                toast.show();
-                if (count > 1) {
+                if(doubleBackToExitPressedOnce){
                     super.onBackPressed();
                 }
+                this.doubleBackToExitPressedOnce = true;
+                Toast.makeText(this, "Press again to exit", Toast.LENGTH_SHORT).show();
+
+                new Handler().postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        doubleBackToExitPressedOnce=false;
+                    }
+                }, 2000);
             }
         }
     }
@@ -121,8 +126,9 @@ public class EritSmartDisplayActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
+        Log.i(TAG, "onStart: ");
         if(!wifiHotspot.isHotspotOn()){
-
+            Log.i(TAG, "onStart:  WIFI" );
             wifiHotspot.setUpWifiHotspot(true);
         }
 
@@ -131,7 +137,9 @@ public class EritSmartDisplayActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
+        Log.i(TAG, "onStop: ");
         if(wifiHotspot.isHotspotOn()){
+            Log.i(TAG, "onStop: WIFI");
             wifiHotspot.setUpWifiHotspot(false);
         }
     }

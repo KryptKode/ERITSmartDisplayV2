@@ -45,8 +45,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         ImageButton displayOverflowButton = holder.displayOverflowButton;
         ImageView boardTypeIcon = holder.boardTypeIcon;
 
-        Log.i(TAG, String.valueOf("onBindViewHolder: " + (priceBoard == null)));
-        Log.i(TAG, "onBindViewHolder: KJJK " + priceBoard.getName());
+
         //set the display name to the name if the user entered it, else, use the IP
         if (priceBoard != null) {
             if (!TextUtils.isEmpty(priceBoard.getName())) {
