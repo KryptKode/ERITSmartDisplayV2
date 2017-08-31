@@ -35,49 +35,58 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <LinearLayout
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content">
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                    <LinearLayout
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_margin="8dp"
-                        app:srcCompat="@drawable/ic_mode_edit_black_24dp" />
+                        android:orientation="horizontal">
 
-                    <android.support.design.widget.TextInputLayout
-                        android:id="@+id/edit_enter_message_text_input_layout"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1">
-
-                        <EditText
-                            android:id="@+id/edit_enter_message"
-                            android:layout_width="match_parent"
+                        <ImageView
+                            android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="16dp"
-                            android:layout_marginRight="16dp"
-                            android:ems="20"
-                            android:hint="@string/enter_the_message"
-                            android:imeOptions="actionDone"
-                            android:inputType="text"
-                            android:maxLines="1"
-                            android:textSize="20sp" />
+                            android:layout_margin="8dp"
+                            app:srcCompat="@drawable/ic_mode_edit_black_24dp" />
 
-                    </android.support.design.widget.TextInputLayout>
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/edit_enter_message_text_input_layout"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1">
+
+                            <EditText
+                                android:id="@+id/edit_enter_message"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginRight="16dp"
+                                android:ems="20"
+                                android:hint="@string/enter_the_message"
+                                android:imeOptions="actionDone"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:textSize="20sp" />
+
+                        </android.support.design.widget.TextInputLayout>
+
+                    </LinearLayout>
 
                     <android.support.design.widget.FloatingActionButton
                         android:id="@+id/saveFloatingActionButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="end|fill_vertical"
                         android:layout_margin="@dimen/fab_margin"
-                        android:visibility="gone"
-                        app:srcCompat = "@drawable/ic_save_black_24dp"/>
+                        android:visibility="visible"
+                        app:srcCompat="@drawable/ic_save_black_24dp" />
 
-                </LinearLayout>
+                </FrameLayout>
 
 
                 <RelativeLayout
@@ -223,8 +232,6 @@
             </LinearLayout>
 
 
-
-
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
@@ -245,8 +252,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/loading_indicator"
             android:layout_centerInParent="true"
+            android:text="@string/syncing"
             android:textColor="@color/colorAccent"
-            android:text="@string/loading"
             android:visibility="invisible" />
 
     </RelativeLayout>

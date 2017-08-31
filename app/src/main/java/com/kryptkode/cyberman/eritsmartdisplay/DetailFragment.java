@@ -17,7 +17,9 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.AppCompatSpinner;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -50,7 +52,7 @@ import static com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoard.PMS;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, TextView.OnEditorActionListener {
+public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, TextView.OnEditorActionListener, TextWatcher {
     public static final String TAG = DetailFragment.class.getSimpleName();
     private static final int DETAIL_LOADER_ID = 400;
     public static final String BOARD_KEY = "board_type";
@@ -67,6 +69,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private ProgressBar loadingIndicatorProgressBar;
     private TextView loadingIndicatorTextView;
     private FloatingActionButton fab;
+    private FloatingActionButton saveFloatingActionButton;
     private RelativeLayout priceRoot;
 
     private TreeMap<String, String> messagesTreeMap;
@@ -75,6 +78,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private RequestToLoad receiver;
     private  int currentSelection;
     private int previousSelection;
+    private boolean isFirstSelection;
+    private boolean hasReloaded;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -87,6 +92,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         switch (id) {
             case R.id.edit_enter_message:
                 saveMessage(messagesSpinner.getSelectedItemPosition() + 1);
+                saveFloatingActionButton.setVisibility(View.GONE);
                 break;
         }
         return true;
@@ -97,7 +103,31 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         String text = messageEditText.getText().toString();
         messagesTreeMap.put(key, text);
         DetailFragmentHelper.dismissKeyboard(getContext(), getView());
-        Toast.makeText(getContext(), R.string.temp_saved, Toast.LENGTH_LONG).show();
+        if(!isFirstSelection){
+            Toast.makeText(getContext(), R.string.temp_saved, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        if(!TextUtils.isEmpty(s)){
+            if (!hasReloaded){
+                saveFloatingActionButton.setVisibility(View.VISIBLE);
+                hasReloaded = false;
+            }
+        }else{
+            saveFloatingActionButton.setVisibility(View.GONE);
+        }
     }
 
 
@@ -141,6 +171,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
+        isFirstSelection = true;
         messagesSpinner = (AppCompatSpinner) view.findViewById(R.id.spinner);
         messagesTextInputLayout = (TextInputLayout) view.findViewById(R.id.edit_enter_message_text_input_layout);
         messageEditText = (EditText) view.findViewById(R.id.edit_enter_message);
@@ -159,12 +190,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         messagesSpinner.setOnItemSelectedListener(spinnerItemSelectedListener);
 
         messageEditText.setOnEditorActionListener(this);
+        messageEditText.addTextChangedListener(this);
         messageEditText.setImeActionLabel(getString(R.string.save), EditorInfo.IME_ACTION_DONE);
 
         loadingIndicatorProgressBar = (ProgressBar) view.findViewById(R.id.loading_indicator);
         loadingIndicatorTextView = (TextView) view.findViewById(R.id.tv_loading);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        saveFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.saveFloatingActionButton);
         fab.setOnClickListener(fabClickListener);
+        saveFloatingActionButton.setOnClickListener(fabClickListener);
 
 
         return view;
@@ -184,14 +218,24 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private View.OnClickListener fabClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (priceBoard.getPriceBoardType() != PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE){
-                priceBoard.setPriceValuesMap(createPriceTreeMap());
-            }
-            priceBoard.setMessagesMap(messagesTreeMap);
-            DetailFragmentHelper.saveMessages(getContext(), priceBoard);
-            Snackbar.make(getView().findViewById(R.id.fragment_root), "Saving...", Snackbar.LENGTH_LONG).show();
+            if (v == fab){
+                if (priceBoard.getPriceBoardType() != PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE){
+                    priceBoard.setPriceValuesMap(createPriceTreeMap());
+                }
+                priceBoard.setMessagesMap(messagesTreeMap);
+                DetailFragmentHelper.saveMessages(getContext(), priceBoard);
+                Snackbar.make(getView().findViewById(R.id.fragment_root), "Saving...", Snackbar.LENGTH_LONG).show();
 
-            //TODO Implement send
+                //TODO Implement send
+                //Use the Connection.java class and the NetworkUtils.java classes
+                //Use .createPriceSendFormat and createMessageSendFormat on the priceBoardInstance to create the formats
+                // //M1 <message one> //M2 <Message 2> .. and //A<ago_price>//D<dpk_price> //P<pms_price>
+            }
+            if (v == saveFloatingActionButton){
+                saveMessage(messagesSpinner.getSelectedItemPosition() + 1);
+                saveFloatingActionButton.setVisibility(View.GONE);
+            }
+
 
         }
     };
@@ -227,14 +271,16 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             //get the message associated with the spinner and display on the edittext
             previousSelection = currentSelection;
-            saveMessage(previousSelection + 1);
+            if (!isFirstSelection){
+                saveMessage(previousSelection + 1);
+            }
             currentSelection = position;
-
+            isFirstSelection = false;
             String key = MSG + String.valueOf(position + 1);
             String message = messagesTreeMap.containsKey(key) ? messagesTreeMap.get(key) : "";
-            messageEditText.setText(message);
+            messageEditText.setText(message.trim());
 
-            if (!TextUtils.isEmpty(message)) {
+            if (!TextUtils.isEmpty(message.trim())) {
                 messagesTextInputLayout.setHint(getString(R.string.content_of_message) + " " + (position + 1));
             } else {
                 messagesTextInputLayout.setHint(getString(R.string.enter_the_message) + " " + (position + 1));
@@ -262,6 +308,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 //sync code
 
                 //TODO Implement sync
+
+                //Use the Connection.java class and the NetworkUtils.java classes
+                //Use .createPriceSendFormat and createMessageSendFormat on the priceBoardInstance to create the formats
+                // //M1 <message one> //M2 <Message 2> .. and //A<ago_price>//D<dpk_price> //P<pms_price>
+
                 DetailFragmentHelper.displayLoadingIndicatiors(new View[] {loadingIndicatorTextView,
                         loadingIndicatorProgressBar}, true);
                 return true;
@@ -328,7 +379,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        hasReloaded = true;
         setUpSpinner();
         if (priceBoard.getPriceBoardType() != PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE){
             decodePriceTreeMap(priceBoard.getPriceValuesMap());

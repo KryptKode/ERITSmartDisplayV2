@@ -17,9 +17,7 @@ import com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoard;
 public class HomeFragmentHelper {
     public static final String EXTRA_KEY = "edkg";
    public static void startDetailActivity(Context context, PriceBoard priceBoard){
-       Uri uri = SmartDisplayContract.SmartDisplayColumns.buildDisplayUri(priceBoard.getId());
        Intent intent = new Intent(context, DetailActivity.class);
-       intent.setData(uri);
        intent.putExtra(EXTRA_KEY, priceBoard);
        context.startActivity(intent);
    }

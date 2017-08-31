@@ -83,7 +83,7 @@ public class DisplayBoardHelpers {
     public static String createMessageSendFormat(TreeMap<String, String> messagesTreeMap) {
         String messages = "";
         for (String key : messagesTreeMap.keySet()) {
-            messages += key + messagesTreeMap.get(key);
+            messages += key + " " + messagesTreeMap.get(key);
         }
         return messages;
     }

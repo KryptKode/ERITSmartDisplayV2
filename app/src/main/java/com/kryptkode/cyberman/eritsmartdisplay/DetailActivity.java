@@ -23,7 +23,6 @@ public class DetailActivity extends AppCompatActivity {
         }
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
 
-        Uri uri = getIntent().getData();
         PriceBoard priceBoard = getIntent().getParcelableExtra(EXTRA_KEY);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
