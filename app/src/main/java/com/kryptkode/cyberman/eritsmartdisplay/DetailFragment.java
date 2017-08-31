@@ -74,6 +74,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private RequestToLoad receiver;
     private  int currentSelection;
+    private int previousSelection;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -85,14 +86,18 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         int id = v.getId();
         switch (id) {
             case R.id.edit_enter_message:
-                String key = MSG + String.valueOf(messagesSpinner.getSelectedItemPosition() + 1);
-                String text = messageEditText.getText().toString();
-                messagesTreeMap.put(key, text);
-                DetailFragmentHelper.dismissKeyboard(getContext(), getView());
-                Toast.makeText(getContext(), "Temporarily Saved", Toast.LENGTH_LONG).show();
+                saveMessage(messagesSpinner.getSelectedItemPosition() + 1);
                 break;
         }
         return true;
+    }
+
+    public void saveMessage(int postion){
+        String key = MSG + String.valueOf(postion);
+        String text = messageEditText.getText().toString();
+        messagesTreeMap.put(key, text);
+        DetailFragmentHelper.dismissKeyboard(getContext(), getView());
+        Toast.makeText(getContext(), R.string.temp_saved, Toast.LENGTH_LONG).show();
     }
 
 
@@ -221,7 +226,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             //get the message associated with the spinner and display on the edittext
+            previousSelection = currentSelection;
+            saveMessage(previousSelection + 1);
             currentSelection = position;
+
             String key = MSG + String.valueOf(position + 1);
             String message = messagesTreeMap.containsKey(key) ? messagesTreeMap.get(key) : "";
             messageEditText.setText(message);

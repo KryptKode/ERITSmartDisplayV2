@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.kryptkode.cyberman.eritsmartdisplay.data.SmartDisplayContract;
 import com.kryptkode.cyberman.eritsmartdisplay.models.MessageBoard;
 import com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoard;
+import com.kryptkode.cyberman.eritsmartdisplay.utils.WifiHotspot;
 import com.kryptkode.cyberman.eritsmartdisplay.views.EditTextDialog;
 import com.kryptkode.cyberman.eritsmartdisplay.views.MessageSelectDisplayDialog;
 import com.kryptkode.cyberman.eritsmartdisplay.views.PriceSelectDisplayDialog;
@@ -37,6 +38,7 @@ public class EritSmartDisplayActivity extends AppCompatActivity
     private NavigationView navigationView;
 
     private PriceBoard priceBoard;
+    private WifiHotspot wifiHotspot;
 
 
     @Override
@@ -67,6 +69,7 @@ public class EritSmartDisplayActivity extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        wifiHotspot = new WifiHotspot(this);
     }
 
 
@@ -113,6 +116,24 @@ public class EritSmartDisplayActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         Log.i(TAG, "onResume: ACTIVITY ");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(!wifiHotspot.isHotspotOn()){
+
+            wifiHotspot.setUpWifiHotspot(true);
+        }
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(wifiHotspot.isHotspotOn()){
+            wifiHotspot.setUpWifiHotspot(false);
+        }
     }
 
     @Override

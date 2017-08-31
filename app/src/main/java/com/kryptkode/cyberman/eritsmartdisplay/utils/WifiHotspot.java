@@ -23,8 +23,8 @@ public class WifiHotspot {
 
 
     public boolean setUpWifiHotspot(boolean enabled){
-        String SSID = "mSSID;";
-        String PASS = "PASSWORD";
+        String SSID = "Erit Smart Display";
+        String PASS = "1234567890";
 
 
 
