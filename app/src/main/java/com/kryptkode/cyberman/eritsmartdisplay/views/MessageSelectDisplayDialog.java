@@ -99,7 +99,6 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
         alertDialogBuilder.setView(spinnerView);
         alertDialogBuilder.setTitle(isEditing ? R.string.edit_boad : R.string.add_new_baord);
-        alertDialogBuilder.setMessage("Message Board Type");
         alertDialogBuilder.setCancelable(false);
         alertDialogBuilder.setPositiveButton(priceBoard.getPriceBoardType() == PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE? getString(R.string.dialog_done) : getString(R.string.dialog_next), new DialogInterface.OnClickListener() {
             @Override

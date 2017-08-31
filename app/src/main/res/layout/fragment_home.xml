@@ -1,6 +1,14 @@
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/home_recycler_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:listitem="@layout/home_list_item" />
+    android:layout_height="match_parent">
+
+    <com.kryptkode.cyberman.eritsmartdisplay.views.EmptyRecyclerView
+        android:id="@+id/home_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/home_list_item" />
+
+    <include layout="@layout/empty_state_view"/>
+
+</RelativeLayout>

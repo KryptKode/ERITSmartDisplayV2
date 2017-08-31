@@ -33,11 +33,13 @@ public class EritSmartDisplayActivity extends AppCompatActivity
     public static final String TAG = EritSmartDisplayActivity.class.getSimpleName();
     public static final String POSITION_KEY = "position";
     public static final String FRAG_TAG = "frag";
+    public static final String HOME_TAG = "home";
+    public static final String BACK_STACK_KEY = "hey_key";
     private int currentPosition;
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
     private NavigationView navigationView;
-
+    private HomeFragment homeFragment;
     private PriceBoard priceBoard;
     private WifiHotspot wifiHotspot;
     private boolean doubleBackToExitPressedOnce;
@@ -50,27 +52,30 @@ public class EritSmartDisplayActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
+        homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HOME_TAG);
         //display the home fragment
-        HomeFragment homeFragment = HomeFragment.getInstance();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.home_root, homeFragment, FRAG_TAG);
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        transaction.commit();
+        if (homeFragment == null) {
+            homeFragment = HomeFragment.getInstance();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.add(R.id.home_root, homeFragment, HOME_TAG);
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            transaction.commit();
+        }
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
 
-        if (savedInstanceState != null) {
-            currentPosition = savedInstanceState.getInt(POSITION_KEY);
-            setActionBarTitle(currentPosition);
-            selectItem(currentPosition);
-        }
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        if (savedInstanceState != null) {
+            currentPosition = savedInstanceState.getInt(POSITION_KEY);
+            selectItem(currentPosition);
+        }else{
+            setNavItemChecked(0);
+        }
         wifiHotspot = new WifiHotspot(this);
     }
 
@@ -82,16 +87,11 @@ public class EritSmartDisplayActivity extends AppCompatActivity
         } else {
             FragmentManager fragmentManager = getSupportFragmentManager();
             if (fragmentManager.getBackStackEntryCount() > 0) {
-                Fragment fragment = fragmentManager.findFragmentByTag(FRAG_TAG);
-                if (fragment instanceof HomeFragment) {
-                    currentPosition = 0;
-                } else if (fragment instanceof SettingsFragment) {
-                    currentPosition = 1;
-                } else if (fragment instanceof AboutFragment) {
-                    currentPosition = 2;
-                }
+                super.onBackPressed();
+                fragmentManager.popBackStack(BACK_STACK_KEY, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                currentPosition = 0;
                 setActionBarTitle(currentPosition);
-                navigationView.getMenu().getItem(currentPosition).setChecked(true);
+                setNavItemChecked(currentPosition);
 
             } else {
                 if(doubleBackToExitPressedOnce){
@@ -178,17 +178,17 @@ public class EritSmartDisplayActivity extends AppCompatActivity
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.home_root, fragment, FRAG_TAG);
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        transaction.addToBackStack(null);
+        transaction.addToBackStack(BACK_STACK_KEY);
         transaction.commit();
     }
 
     private void selectItem(int position) {
 // update the main content by replacing fragments
         currentPosition = position;
-        Fragment fragment;
+        Fragment fragment = null;
         switch (position) {
             case 0:
-                fragment = HomeFragment.getInstance();
+                getSupportFragmentManager().popBackStack(BACK_STACK_KEY, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 break;
             case 1:
                 fragment = new SettingsFragment();
@@ -200,11 +200,18 @@ public class EritSmartDisplayActivity extends AppCompatActivity
                 fragment = HomeFragment.getInstance();
 
         }
-        displayFragment(fragment);
+        if(position != 0) {
+            displayFragment(fragment);
+        }
 //Set the action bar title
         setActionBarTitle(position);
+        setNavItemChecked(position);
 //Close the drawer
         drawer.closeDrawer(GravityCompat.START);
+    }
+
+    private  void setNavItemChecked(int postion){
+        navigationView.getMenu().getItem(postion).setChecked(true);
     }
 
     private void setActionBarTitle(int position) {
@@ -287,9 +294,7 @@ public class EritSmartDisplayActivity extends AppCompatActivity
     @Override
     public void onDialogPositiveButtonClicked(DialogFragment dialog, PriceBoard priceBoard,  boolean isEditing) {
         this.priceBoard = priceBoard;
-
         Log.i(TAG, "onDialogPositiveButtonClicked: Num  " + priceBoard.getNumberOfMessages());
-
         MessageSelectDisplayDialog messageSelectDisplayDialog = MessageSelectDisplayDialog.getInstance(priceBoard, isEditing);
         messageSelectDisplayDialog.show(getSupportFragmentManager(), "msg");
     }

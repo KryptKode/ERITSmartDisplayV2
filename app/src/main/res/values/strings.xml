@@ -89,6 +89,16 @@
     <string name="number">Number</string>
     <string name="add_new_baord">Add a new Display Board</string>
     <string name="edit_boad">Edit your Display Board</string>
-    <string name="open_with">Open with...</string>
+    <string name="open_with">Open with…</string>
     <string name="temp_saved">Temporarily Saved</string>
+    <string name="the_list_is_empty_image">The list is empty image</string>
+    <string name="it_s_lonely_here_n_you_might_want_to_add_a_new_display_board">It\'s lonely here \n You might want to add a new display board</string>
+    <string name="auto_turn_on_wifi_key" translatable="false">turn_on_key</string>
+    <string name="auto_turn_on_wifi_sum_on">Enabled</string>
+    <string name="auto_turn_on_wifi_sum_off">Disabled</string>
+    <string name="auto_turn_on_wifi_title">Turn on Hotspot automatically</string>
+    <string name="network">Network</string>
+    <string name="board">Appearance</string>
+    <string name="authentication">Authentication</string>
+
 </resources>

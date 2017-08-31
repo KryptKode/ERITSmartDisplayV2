@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.AppCompatSpinner
             android:id="@+id/message_board_spinner"
@@ -13,27 +20,27 @@
             android:entries="@array/message_board_types"
             />
 
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/add_message_board_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/erit_logo"
-        android:visibility="invisible"
-        />
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="0dp"
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/add_message_board_image"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:text="@string/number_of_messages"/>
+            app:srcCompat="@drawable/erit_logo"
+            android:visibility="invisible"
+            />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:text="@string/number_of_messages"/>
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/add_num_of_msgs"
@@ -46,6 +53,7 @@
                 android:inputType="number"
                 android:hint="@string/number"/>
 
-    </LinearLayout>
+        </LinearLayout>
 
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -1,22 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <ListPreference
-        android:dialogTitle="@string/sort_by"
-        android:entries="@array/prefs_sort"
-        android:entryValues="@array/prefs_sort"
-        android:key="@string/sort_key"
-        android:persistent="true"
-        android:defaultValue="@string/sort_default"
-        android:summary="@string/sort_order_summary"
-        android:title="@string/sort_order" />
+    <PreferenceCategory android:title="@string/network">
 
-    <SwitchPreference
-        android:title="Automatically turn ON hotspot on startup"
-        android:switchTextOn="Turned ON"
-        android:switchTextOff="Turned OFF"
-        android:persistent="true"
-        android:defaultValue="ON"
-        />
+        <SwitchPreferenceCompat
+            android:defaultValue="@bool/auto_turn_on_wifi"
+            android:key="@string/auto_turn_on_wifi_key"
+            android:summaryOff="@string/auto_turn_on_wifi_sum_off"
+            android:summaryOn="@string/auto_turn_on_wifi_sum_on"
+            android:title="@string/auto_turn_on_wifi_title" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/board">
+
+        <ListPreference
+            android:defaultValue="@string/sort_default"
+            android:dialogTitle="@string/sort_by"
+            android:entries="@array/prefs_sort"
+            android:entryValues="@array/prefs_sort"
+            android:key="@string/sort_key"
+            android:persistent="true"
+            android:summary="@string/sort_order_summary"
+            android:title="@string/sort_order" />
+
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/authentication">
+        <Preference
+            android:title="Change Password"
+            />
+    </PreferenceCategory>
+
 
 </PreferenceScreen>

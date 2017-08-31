@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+   >
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
-    <android.support.v7.widget.AppCompatSpinner
-        android:id="@+id/dialog_price_board_spinner"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/add_display_spinner_margin"
-        android:entries="@array/price_board_types"
-        />
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/dialog_add_price_board_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/erit_logo"
-        android:visibility="invisible"
-        />
+        android:orientation="vertical">
 
-</LinearLayout>
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/dialog_price_board_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/add_display_spinner_margin"
+            android:entries="@array/price_board_types" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/dialog_add_price_board_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:srcCompat="@drawable/erit_logo" />
+
+    </LinearLayout>
+</ScrollView>

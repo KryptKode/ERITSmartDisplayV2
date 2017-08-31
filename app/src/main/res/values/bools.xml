@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <bool name="sw_700_device">false</bool>
+    <bool name="auto_turn_on_wifi">true</bool>
 </resources>

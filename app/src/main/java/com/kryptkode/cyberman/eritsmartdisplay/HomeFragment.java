@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,9 +14,10 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.RecyclerView;
+import com.kryptkode.cyberman.eritsmartdisplay.views.EmptyRecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,9 +39,10 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
 
     public static final String TAG = HomeFragment.class.getSimpleName();
     public static final int DISPLAY_LOADER_ID = 200;
-    private RecyclerView recyclerView;
+    private EmptyRecyclerView recyclerView;
     private HomeAdapter homeAdapter;
-    private LinearLayoutManager linearLayoutManager;
+    private GridLayoutManager gridLayoutManager;
+    private View emptyView;
 
     private HomeFragmentListener homeFragmentListener;
     private RequestToLoad receiver;
@@ -74,16 +77,24 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+        //setRetainInstance(true);
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.home_recycler_view);
+        recyclerView = (EmptyRecyclerView) view.findViewById(R.id.home_recycler_view);
+        emptyView = view.findViewById(R.id.empty_root);
         homeAdapter = new HomeAdapter(getContext());
         homeAdapter.setHomeAdapterListener(this);
-        linearLayoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(linearLayoutManager);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            gridLayoutManager = new GridLayoutManager(getContext(), 1);
+        }
+        else{
+            gridLayoutManager = new GridLayoutManager(getContext(), 2);
+        }
+
+        recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.hasFixedSize();
         recyclerView.addItemDecoration(new ItemDivider(getContext()));
         recyclerView.setAdapter(homeAdapter);
-
+        recyclerView.setEmptyView(emptyView);
         receiver = new RequestToLoad();
 
         LocalBroadcastManager.getInstance(getContext())
@@ -184,7 +195,6 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
                         EditTextDialog editTextDialog = EditTextDialog.getInstance(priceBoard, true);
                         editTextDialog.setCancelable(false);
                         editTextDialog.show(getChildFragmentManager(), "");
-
                         return true;
 
                     case R.id.action_delete:
