@@ -43,6 +43,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         ImageView displayAvatar = holder.displayAvatar;
         TextView displayName = holder.displayName;
         ImageButton displayOverflowButton = holder.displayOverflowButton;
+        ImageView boardTypeIcon = holder.boardTypeIcon;
+
         Log.i(TAG, String.valueOf("onBindViewHolder: " + (priceBoard == null)));
         Log.i(TAG, "onBindViewHolder: KJJK " + priceBoard.getName());
         //set the display name to the name if the user entered it, else, use the IP
@@ -55,6 +57,12 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
                 displayName.setText(priceBoard.getIpAddress());
                 Log.i(TAG, "onBindViewHolder: PRICE IP " + priceBoard.getIpAddress());
                 Log.i(TAG, "onBindViewHolder: IP" + displayName.getText());
+            }
+
+            if(priceBoard.getPriceBoardType() == PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE){
+                boardTypeIcon.setImageResource(R.drawable.ic_restaurant);
+            }else{
+                boardTypeIcon.setImageResource(R.drawable.ic_local_gas_station_black_24dp);
             }
             holder.itemView.setTag(priceBoard);
             displayOverflowButton.setTag(priceBoard);
@@ -102,12 +110,14 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         ImageView displayAvatar;
         TextView displayName;
         ImageButton displayOverflowButton;
+        ImageView boardTypeIcon;
 
         public HomeViewHolder(View itemView) {
             super(itemView);
             displayAvatar = (ImageView) itemView.findViewById(R.id.display_imageView);
             displayName = (TextView) itemView.findViewById(R.id.display_name_textView);
             displayOverflowButton = (ImageButton) itemView.findViewById(R.id.display_overflow);
+            boardTypeIcon = (ImageView) itemView.findViewById(R.id.board_type_icon);
 
             itemView.setOnClickListener(this);
             displayOverflowButton.setOnClickListener(this);

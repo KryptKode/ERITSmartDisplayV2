@@ -41,7 +41,7 @@ public class DetailFragmentHelper {
     public static void saveMessages(Context context, PriceBoard priceBoard) {
         ContentValues contentValues = new ContentValues();
         Log.i(TAG, "saveMessages: " + priceBoard.createMessageSendFormat());
-        if (priceBoard.getPriceBoardType() == PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE) { //the display is a mesage board
+        if (priceBoard.getPriceBoardType() != PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE) { //the display is a not a message board
             Log.i(TAG, "saveMessages: " + priceBoard.createPriceSendFormat());
             contentValues.put(SmartDisplayContract.SmartDisplayColumns.COLUMN_PRICE_BOARD_STRING, priceBoard.createPriceSendFormat());
         }

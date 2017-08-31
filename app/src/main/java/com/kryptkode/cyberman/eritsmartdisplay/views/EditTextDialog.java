@@ -201,7 +201,7 @@ public class EditTextDialog extends DialogFragment implements TextWatcher {
             ipAddressTextInputEditText.setText(priceBoard.getIpAddress());
         }
 
-        //for large-screen devices
+/*        //for large-screen devices
         if (getResources().getBoolean(R.bool.sw_700_device)) {
             messageTypeSpinner = (AppCompatSpinner) getView().findViewById(R.id.message_board_spinner);
             messageTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -233,7 +233,7 @@ public class EditTextDialog extends DialogFragment implements TextWatcher {
                 messageCountEditText.setText(priceBoard.getNumberOfMessages());
             }
 
-        }
+        }*/
     }
 
     @Override

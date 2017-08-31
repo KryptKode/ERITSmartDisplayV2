@@ -31,6 +31,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,11 +67,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private ProgressBar loadingIndicatorProgressBar;
     private TextView loadingIndicatorTextView;
     private FloatingActionButton fab;
+    private RelativeLayout priceRoot;
 
     private TreeMap<String, String> messagesTreeMap;
     private PriceBoard priceBoard;
 
     private RequestToLoad receiver;
+    private  int currentSelection;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -143,6 +146,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         agoThreeEditText = (EditText) view.findViewById(R.id.ago_000);
         agoTwoEditText = (EditText) view.findViewById(R.id.ago_00);
 
+        priceRoot = (RelativeLayout) view.findViewById(R.id.price_root);
+        if(priceBoard.getPriceBoardType() == PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE){
+            priceRoot.setVisibility(View.GONE);
+        }
+
         messagesSpinner.setOnItemSelectedListener(spinnerItemSelectedListener);
 
         messageEditText.setOnEditorActionListener(this);
@@ -161,7 +169,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public void onStart() {
         super.onStart();
         setUpSpinner();
-        if (priceBoard.getPriceValuesMap() != null) {
+        if (priceBoard.getPriceValuesMap() != null &&
+                priceBoard.getPriceBoardType() != PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE) {
             decodePriceTreeMap(priceBoard.getPriceValuesMap());
         }
 
@@ -170,10 +179,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private View.OnClickListener fabClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            priceBoard.setPriceValuesMap(createPriceTreeMap());
+            if (priceBoard.getPriceBoardType() != PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE){
+                priceBoard.setPriceValuesMap(createPriceTreeMap());
+            }
             priceBoard.setMessagesMap(messagesTreeMap);
             DetailFragmentHelper.saveMessages(getContext(), priceBoard);
             Snackbar.make(getView().findViewById(R.id.fragment_root), "Saving...", Snackbar.LENGTH_LONG).show();
+
+            //TODO Implement send
 
         }
     };
@@ -181,8 +194,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private void setUpSpinner() {
         if (priceBoard.getMessagesMap() != null) {
             messagesTreeMap = priceBoard.getMessagesMap();
+            Log.i(TAG, "setUpSpinner: " + priceBoard.getMessagesMap().toString());
         } else {
             messagesTreeMap = new TreeMap<>();
+            for (int i = 1; i <= priceBoard.getNumberOfMessages() ; i++) {
+                messagesTreeMap.put(MSG + i, "");
+            }
+            Log.i(TAG, "setUpSpinner: tree " );
         }
         Log.v(TAG, "Num_of_msg-->" + priceBoard.getNumberOfMessages());
         List<String> spinnerEntries = new ArrayList<>();
@@ -195,6 +213,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         messagesSpinner.setAdapter(adapter);
+        messagesSpinner.setSelection(currentSelection, true);
 
     }
 
@@ -202,7 +221,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             //get the message associated with the spinner and display on the edittext
-
+            currentSelection = position;
             String key = MSG + String.valueOf(position + 1);
             String message = messagesTreeMap.containsKey(key) ? messagesTreeMap.get(key) : "";
             messageEditText.setText(message);
@@ -233,6 +252,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         switch (itemId) {
             case R.id.action_sync:
                 //sync code
+
+                //TODO Implement sync
                 DetailFragmentHelper.displayLoadingIndicatiors(new View[] {loadingIndicatorTextView,
                         loadingIndicatorProgressBar}, true);
                 return true;
@@ -301,7 +322,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         }
 
         setUpSpinner();
-        decodePriceTreeMap(priceBoard.getPriceValuesMap());
+        if (priceBoard.getPriceBoardType() != PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE){
+            decodePriceTreeMap(priceBoard.getPriceValuesMap());
+        }
 
 
 
@@ -355,4 +378,5 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         }
     }
+
 }

@@ -11,6 +11,9 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatSpinner;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,7 +27,7 @@ import com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoard;
  * Created by Cyberman on 8/22/2017.
  */
 
-public class MessageSelectDisplayDialog extends DialogFragment implements AdapterView.OnItemSelectedListener {
+public class MessageSelectDisplayDialog extends DialogFragment implements AdapterView.OnItemSelectedListener, TextWatcher {
     public static final String IS_IN_EDIT_MODE_KEY = "positive_button";
     public static final String PRICE_TYPE = "board_type";
 
@@ -88,6 +91,7 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
         appCompatImageView = (AppCompatImageView) spinnerView.findViewById(R.id.add_message_board_image);
         appCompatSpinner = (AppCompatSpinner) spinnerView.findViewById(R.id.message_board_spinner);
         textInputEditText = (TextInputEditText) spinnerView.findViewById(R.id.add_num_of_msgs);
+        textInputEditText.addTextChangedListener(this);
         appCompatSpinner.setOnItemSelectedListener(this);
 
 
@@ -152,6 +156,25 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        if (TextUtils.isEmpty(s)) {
+            dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(false);
+        } else {
+            dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(true);
+        }
     }
 
 
