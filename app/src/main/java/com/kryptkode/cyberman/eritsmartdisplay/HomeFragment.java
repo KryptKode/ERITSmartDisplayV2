@@ -11,6 +11,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.transition.Fade;
+import android.support.transition.TransitionManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -52,6 +54,8 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
     private RequestToLoad receiver;
     private String sortOrderKey;
     private boolean autoEnableHotspotIsActive;
+
+    private  ViewGroup homeViewGroup;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -114,6 +118,8 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
 
             Toast.makeText(getContext(), "Hotspot auto start: " + autoEnableHotspotIsActive, Toast.LENGTH_SHORT).show();
         }
+
+        homeViewGroup = (ViewGroup) view.findViewById(R.id.home_root);
 
         LocalBroadcastManager.getInstance(getContext())
                 .registerReceiver(receiver, new IntentFilter(SmartDisplayService.ACTION_READ_DB));
@@ -197,6 +203,9 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
         public void onReceive(Context context, Intent intent) {
             if (intent.getBooleanExtra(SmartDisplayService.DISPLAY_PAYLOAD, false)) {
                 Log.i(TAG, "onReceive: ");
+                Fade fade = new Fade();
+                fade.setDuration(1000);
+                TransitionManager.beginDelayedTransition(homeViewGroup, fade);
                 createLoader();
             }
 
