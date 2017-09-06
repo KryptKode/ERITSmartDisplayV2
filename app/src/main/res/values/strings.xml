@@ -5,7 +5,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="www_erit_com_ng">www.erit.com.ng</string>
+    <string name="www_erit_com_ng"><a href = "http://google.com"> www.erit.com.ng </a></string>
     <string name="electrohyve_research_institute_of_technology">Electrohyve Research Institute of Technology</string>
     <string name="home">Home</string>
     <string name="about">About</string>

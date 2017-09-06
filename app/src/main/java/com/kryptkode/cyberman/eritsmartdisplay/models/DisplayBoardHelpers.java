@@ -3,6 +3,7 @@ package com.kryptkode.cyberman.eritsmartdisplay.models;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.util.Comparator;
 import java.util.TreeMap;
 
 import static com.kryptkode.cyberman.eritsmartdisplay.models.MessageBoard.MSG;
@@ -16,6 +17,8 @@ import static com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoard.PMS;
  */
 
 public class DisplayBoardHelpers {
+    public static final int PRICE_BOARD_DEC = 50;
+    public static final int MESSAGE_BOARD_DEC = 100;
     public static final String TAG = DisplayBoardHelpers.class.getSimpleName();
 
     public static TreeMap<String, String> parseMessageString(String data, int numOfMessagees) {
@@ -87,5 +90,17 @@ public class DisplayBoardHelpers {
         }
         return messages;
     }
+
+    public static String generateMesssageBoardCode(MessageBoard.MessageBoardType messageBoardType){
+        Log.i(TAG, "generateMesssageBoardCode: " + Integer.toHexString(MESSAGE_BOARD_DEC + messageBoardType.getNumberOfCascades()));
+        return Integer.toHexString(MESSAGE_BOARD_DEC + messageBoardType.getNumberOfCascades());
+    }
+
+    public static String generatePriceBoardCode(PriceBoard.PriceBoardType priceBoardType){
+        Log.i(TAG, "generatePriceBoardCode: " + Integer.toHexString(PRICE_BOARD_DEC + priceBoardType.getNumberOfCascades()));
+        return Integer.toHexString(PRICE_BOARD_DEC + priceBoardType.getNumberOfCascades());
+    }
+
+
 
 }

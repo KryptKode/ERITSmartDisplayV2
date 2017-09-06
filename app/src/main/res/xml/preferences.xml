@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory android:title="@string/network">
 
-        <SwitchPreferenceCompat
+        <SwitchPreference
             android:defaultValue="@bool/auto_turn_on_wifi"
             android:key="@string/auto_turn_on_wifi_key"
             android:summaryOff="@string/auto_turn_on_wifi_sum_off"
@@ -19,7 +19,6 @@
             android:entryValues="@array/prefs_sort"
             android:key="@string/sort_key"
             android:persistent="true"
-            android:summary="@string/sort_order_summary"
             android:title="@string/sort_order" />
 
     </PreferenceCategory>
@@ -27,6 +26,7 @@
         <Preference
             android:title="Change Password"
             />
+        <!--TODO Add intent to change the password-->
     </PreferenceCategory>
 
 

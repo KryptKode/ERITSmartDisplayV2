@@ -35,6 +35,8 @@ public class SmartDisplayDbHelper extends SQLiteOpenHelper {
     public static final String AUTOINCREMENT = " AUTOINCREMENT ";
     public static final String OPEN_PARENTHESIS = "(";
     public static final String CLOSE_PARENTHESIS = " );";
+    public static final String COLLATE = "COLLATE";
+    public static final String NO_CASE = "NOCASE";
 
     public SmartDisplayDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -45,7 +47,7 @@ public class SmartDisplayDbHelper extends SQLiteOpenHelper {
         String CREATE_DISPLAY_TABLE = CREATE_TABLE + SmartDisplayColumns.DISPLAY_TABLE_NAME +
                 OPEN_PARENTHESIS +
                 SmartDisplayColumns._ID + INTEGER + PRIMARY_KEY + AUTOINCREMENT + COMMA_SEP +
-                SmartDisplayColumns.COLUMN_NAME + TEXT + COMMA_SEP +
+                SmartDisplayColumns.COLUMN_NAME + TEXT + COLLATE + NO_CASE + COMMA_SEP +
                 SmartDisplayColumns.COLUMN_IP_ADDRESS + TEXT + COMMA_SEP +
                 SmartDisplayColumns.COLUMN_BOARD_TYPE + TEXT + COMMA_SEP +
                 SmartDisplayColumns.COLUMN_MESSAGE_STRING + TEXT + COMMA_SEP +
@@ -69,8 +71,8 @@ public class SmartDisplayDbHelper extends SQLiteOpenHelper {
         values.put(SmartDisplayColumns.COLUMN_NAME, "Demo Board X");
         values.put(SmartDisplayColumns.COLUMN_IP_ADDRESS, "192.168.43.135");
         values.put(SmartDisplayColumns.COLUMN_BOARD_TYPE, "2|2");
-        values.put(SmartDisplayColumns.COLUMN_NUMBER_OF_MSG, 4);
-        values.put(SmartDisplayColumns.COLUMN_MESSAGE_STRING, "//M1 Hello //M2 Jerry //M3 Telnet //M4 Johnnnny");
+        values.put(SmartDisplayColumns.COLUMN_NUMBER_OF_MSG, 10);
+        values.put(SmartDisplayColumns.COLUMN_MESSAGE_STRING, "//M1 Hello //M2 Jerry //M3 Telnet //M4 Johnnnny //M5 Jesujs //M6 Ngfkg //M7 rtrjtkjr //M8 fgjfjgk //M9 dgjkdfjg //M10 dgjdgjdfk");
         Log.i(TAG, "loadDummyData: " + values.get(SmartDisplayColumns.COLUMN_MESSAGE_STRING));
         values.put(SmartDisplayColumns.COLUMN_PRICE_BOARD_STRING, "//A150:00//D250:00//P197:00");
 

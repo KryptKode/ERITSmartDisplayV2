@@ -1,6 +1,7 @@
 package com.kryptkode.cyberman.eritsmartdisplay;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -29,7 +30,7 @@ import com.kryptkode.cyberman.eritsmartdisplay.views.PriceSelectDisplayDialog;
 
 public class EritSmartDisplayActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.HomeFragmentListener, EditTextDialog.EditTextDialogListener,
-        PriceSelectDisplayDialog.PriceSelectDisplayDialogListener, MessageSelectDisplayDialog.SelectDisplayDialogListener {
+         MessageSelectDisplayDialog.SelectDisplayDialogListener {
     public static final String TAG = EritSmartDisplayActivity.class.getSimpleName();
     public static final String POSITION_KEY = "position";
     public static final String FRAG_TAG = "frag";
@@ -52,6 +53,10 @@ public class EritSmartDisplayActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
         homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(HOME_TAG);
         //display the home fragment
         if (homeFragment == null) {
@@ -127,10 +132,10 @@ public class EritSmartDisplayActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         Log.i(TAG, "onStart: ");
-        if(!wifiHotspot.isHotspotOn()){
+       /* if(!wifiHotspot.isHotspotOn()){
             Log.i(TAG, "onStart:  WIFI" );
             wifiHotspot.setUpWifiHotspot(true);
-        }
+        }*/
 
     }
 
@@ -138,10 +143,10 @@ public class EritSmartDisplayActivity extends AppCompatActivity
     protected void onStop() {
         super.onStop();
         Log.i(TAG, "onStop: ");
-        if(wifiHotspot.isHotspotOn()){
+       /* if(wifiHotspot.isHotspotOn()){
             Log.i(TAG, "onStop: WIFI");
             wifiHotspot.setUpWifiHotspot(false);
-        }
+        }*/
     }
 
     @Override
@@ -166,11 +171,21 @@ public class EritSmartDisplayActivity extends AppCompatActivity
             selectItem(2);
 
         } else if (id == R.id.nav_share) {
-            selectItem(3);
+           //TODO Implement share
+            shareThisApp();
         }
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void shareThisApp() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Check out this Site");
+        intent.putExtra(Intent.EXTRA_TEXT, "To cater for all your embedded systems needs, check out \n http://erit.com.ng");
+        Intent chooserIntent = Intent.createChooser(intent, "Share with...");
+        startActivity(chooserIntent);
     }
 
 
@@ -236,20 +251,6 @@ public class EritSmartDisplayActivity extends AppCompatActivity
 
     }
 
-    @Override
-    public void onPriceDialogPositiveButtonClicked(DialogFragment dialog, PriceBoard priceBoard, boolean isEditing) {
-
-        this.priceBoard = priceBoard;
-
-        if(isEditing){
-            updateBoard();
-        }else {
-            saveBoard();
-
-        }
-        dialog.dismiss();
-
-    }
 
     private void saveBoard() {
         ContentValues contentValues = new ContentValues();
@@ -275,11 +276,7 @@ public class EritSmartDisplayActivity extends AppCompatActivity
     public void onMessageDialogPositiveButtonClicked(DialogFragment dialog, PriceBoard priceBoard, boolean isEditing ){
         this.priceBoard = priceBoard;
 
-        if (priceBoard.getPriceBoardType() != PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE) {
-            PriceSelectDisplayDialog priceSelectDisplayDialog = PriceSelectDisplayDialog.getInstance(priceBoard, isEditing);
-            priceSelectDisplayDialog.setCancelable(false);
-            priceSelectDisplayDialog.show(getSupportFragmentManager(), "dialog");
-        } else {
+
             if(isEditing){
                 updateBoard();
             }else {
@@ -287,7 +284,7 @@ public class EritSmartDisplayActivity extends AppCompatActivity
 
             }
             dialog.dismiss();
-        }
+
     }
 
 

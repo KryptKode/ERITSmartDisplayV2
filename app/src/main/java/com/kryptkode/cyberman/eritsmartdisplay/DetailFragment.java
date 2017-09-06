@@ -11,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.transition.Fade;
+import android.support.transition.TransitionManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -38,6 +40,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kryptkode.cyberman.eritsmartdisplay.models.PriceBoard;
+import com.kryptkode.cyberman.eritsmartdisplay.utils.Connection;
+import com.kryptkode.cyberman.eritsmartdisplay.utils.NetworkUtil;
+import com.kryptkode.cyberman.eritsmartdisplay.utils.NumberAwareStringComparator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +85,12 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private int previousSelection;
     private boolean isFirstSelection;
     private boolean hasReloaded;
+    private boolean firstTime = true;
+
+    private Fade fade;
+    private ViewGroup rootViewGroup;
+
+
 
     public DetailFragment() {
         // Required empty public constructor
@@ -91,8 +102,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         int id = v.getId();
         switch (id) {
             case R.id.edit_enter_message:
+                TransitionManager.beginDelayedTransition(rootViewGroup, fade);
                 saveMessage(messagesSpinner.getSelectedItemPosition() + 1);
                 saveFloatingActionButton.setVisibility(View.GONE);
+                fab.setVisibility(View.VISIBLE);
                 break;
         }
         return true;
@@ -121,12 +134,21 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void afterTextChanged(Editable s) {
         if(!TextUtils.isEmpty(s)){
-            if (!hasReloaded){
-                saveFloatingActionButton.setVisibility(View.VISIBLE);
-                hasReloaded = false;
+            TransitionManager.beginDelayedTransition(rootViewGroup, fade);
+                if (!hasReloaded ){
+                    saveFloatingActionButton.setVisibility(View.VISIBLE);
+                    fab.setVisibility(View.GONE);
+                    hasReloaded = false;
+
+                    if (firstTime){
+                        saveFloatingActionButton.setVisibility(View.GONE);
+                        fab.setVisibility(View.VISIBLE);
+                        firstTime = false;
+                    }
             }
         }else{
             saveFloatingActionButton.setVisibility(View.GONE);
+            fab.setVisibility(View.VISIBLE);
         }
     }
 
@@ -201,6 +223,13 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         saveFloatingActionButton.setOnClickListener(fabClickListener);
 
 
+        fade = new Fade();
+        fade.setDuration(500);
+        fade.addTarget(fab);
+        fade.addTarget(saveFloatingActionButton);
+
+        rootViewGroup = (ViewGroup) view.findViewById(R.id.fragment_root);
+
         return view;
     }
 
@@ -224,6 +253,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 }
                 priceBoard.setMessagesMap(messagesTreeMap);
                 DetailFragmentHelper.saveMessages(getContext(), priceBoard);
+                if (priceBoard.getPriceBoardType() == PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE){
+                    String data = "http://" + priceBoard.getIpAddress() + priceBoard.createMessageSendFormat();
+
+                    Toast.makeText(getContext(), "http://" + priceBoard.getIpAddress() + priceBoard.createMessageSendFormat(), Toast.LENGTH_SHORT).show();
+                }else{
+
+                    Toast.makeText(getContext(),"http://" +  priceBoard.getIpAddress() + priceBoard.createMessageSendFormat() + priceBoard.createPriceSendFormat(), Toast.LENGTH_SHORT).show();
+                }
                 Snackbar.make(getView().findViewById(R.id.fragment_root), "Saving...", Snackbar.LENGTH_LONG).show();
 
                 //TODO Implement send
@@ -232,8 +269,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 // //M1 <message one> //M2 <Message 2> .. and //A<ago_price>//D<dpk_price> //P<pms_price>
             }
             if (v == saveFloatingActionButton){
+                TransitionManager.beginDelayedTransition(rootViewGroup, fade);
                 saveMessage(messagesSpinner.getSelectedItemPosition() + 1);
                 saveFloatingActionButton.setVisibility(View.GONE);
+                fab.setVisibility(View.VISIBLE);
             }
 
 
@@ -245,7 +284,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             messagesTreeMap = priceBoard.getMessagesMap();
             Log.i(TAG, "setUpSpinner: " + priceBoard.getMessagesMap().toString());
         } else {
-            messagesTreeMap = new TreeMap<>();
+            messagesTreeMap = new TreeMap<>( new NumberAwareStringComparator());
             for (int i = 1; i <= priceBoard.getNumberOfMessages() ; i++) {
                 messagesTreeMap.put(MSG + i, "");
             }
@@ -275,17 +314,16 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 saveMessage(previousSelection + 1);
             }
             currentSelection = position;
-            isFirstSelection = false;
             String key = MSG + String.valueOf(position + 1);
             String message = messagesTreeMap.containsKey(key) ? messagesTreeMap.get(key) : "";
             messageEditText.setText(message.trim());
-
             if (!TextUtils.isEmpty(message.trim())) {
                 messagesTextInputLayout.setHint(getString(R.string.content_of_message) + " " + (position + 1));
             } else {
                 messagesTextInputLayout.setHint(getString(R.string.enter_the_message) + " " + (position + 1));
             }
 
+            isFirstSelection = false;
         }
 
         @Override
@@ -312,7 +350,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                 //Use the Connection.java class and the NetworkUtils.java classes
                 //Use .createPriceSendFormat and createMessageSendFormat on the priceBoardInstance to create the formats
                 // //M1 <message one> //M2 <Message 2> .. and //A<ago_price>//D<dpk_price> //P<pms_price>
-
+                Toast.makeText(getContext(), NetworkUtil.buildBoardConfigUrl(priceBoard), Toast.LENGTH_SHORT).show();
                 DetailFragmentHelper.displayLoadingIndicatiors(new View[] {loadingIndicatorTextView,
                         loadingIndicatorProgressBar}, true);
                 return true;

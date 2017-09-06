@@ -6,11 +6,15 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
+import android.util.Log;
 
 
 public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener{
+
+    public static final String TAG = SettingsFragment.class.getSimpleName();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,13 +35,21 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
         PreferenceScreen preferenceScreen = getPreferenceScreen();
 
-        for (int i = 0; i < preferenceScreen.getPreferenceCount() ; i++) {
-            Preference pref = preferenceScreen.getPreference(i);
-            if(pref instanceof ListPreference){
-                String value = sharedPreferences.getString(pref.getKey(), getString(R.string.sort_default));
-                setPrefernceSummary(pref, value);
+
+            Preference pref = preferenceScreen.getPreference(1);
+            if(pref instanceof PreferenceCategory){
+                
+                if(((PreferenceCategory) pref).getPreference(0) instanceof  ListPreference){
+                    ListPreference listPreference = (ListPreference) ((PreferenceCategory) pref).getPreference(0);
+                    String value = sharedPreferences.getString(listPreference.getKey(), getString(R.string.sort_default));
+                    setPrefernceSummary(listPreference, value);
+                    Log.i(TAG, "onCreatePreferences: List" +  value + pref.getKey());
+                }
+
+                Log.i(TAG, "onCreatePreferences: ");
+
             }
-        }
+
 
     }
 

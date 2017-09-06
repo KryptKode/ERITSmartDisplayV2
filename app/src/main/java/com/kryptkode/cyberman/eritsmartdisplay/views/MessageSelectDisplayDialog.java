@@ -17,6 +17,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.kryptkode.cyberman.eritsmartdisplay.R;
@@ -133,10 +134,10 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
     public void onStart() {
         super.onStart();
         dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(false);
-
+        setUpSpinner();
         if(isEditing){
             textInputEditText.setText(String.valueOf(priceBoard.getNumberOfMessages()));
-            appCompatSpinner.setSelection(priceBoard.getMessageBoardType().getNumberOfCascades() - 1, true);
+            appCompatSpinner.setSelection(priceBoard.getMessageBoardType().getNumberOfCascades(), true);
         }
     }
 
@@ -144,11 +145,18 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (position > 0) {
             try {
-                priceBoard.setMessageBoardType(MessageBoard.getMessageBoardTypeFromInt(position + 1));
+                
+                if (priceBoard.getPriceBoardType() == PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE){
+                    priceBoard.setMessageBoardType(MessageBoard.getMessageBoardTypeFromInt(position));
+                }else{
+                    priceBoard.setPriceBoardType(PriceBoard.getPriceBoardTypeFromInt(position));
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            setImageResource(priceBoard.getMessageBoardType().getNumberOfCascades());
+
+            // TODO: 9/5/2017 Set image resouce 
+//            setImageResource(priceBoard.getMessageBoardType().getNumberOfCascades());
             dialog.getButton(Dialog.BUTTON_POSITIVE).setEnabled(true);
         } else {
             showToast();
@@ -188,5 +196,20 @@ public class MessageSelectDisplayDialog extends DialogFragment implements Adapte
     //used to change the image resource or video for the proto_simutation of the display
     private void setImageResource(int boardType) {
         // TODO: Implememt the method to change the image resouce
+    }
+
+    private void setUpSpinner(){
+        int arrayResource;
+        if (priceBoard.getPriceBoardType() == PriceBoard.PriceBoardType.PRICE_BOARD_TYPE_NONE){
+            arrayResource = R.array.message_board_types;
+        }else{
+            arrayResource = R.array.price_board_types;
+        }
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+                arrayResource, android.R.layout.simple_spinner_item);
+// Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+// Apply the adapter to the spinner
+        appCompatSpinner.setAdapter(adapter);
     }
 }

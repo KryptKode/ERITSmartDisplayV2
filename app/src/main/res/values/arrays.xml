@@ -11,11 +11,29 @@
         <item>TYPE 7</item>
         <item>TYPE 8</item>
         <item>TYPE 9</item>
+        <item>TYPE 10</item>
+        <item>TYPE 11</item>
+        <item>TYPE 12</item>
+        <item>TYPE 13</item>
+        <item>TYPE 14</item>
+        <item>TYPE 15</item>
+        <item>TYPE 16</item>
+        <item>TYPE 17</item>
+        <item>TYPE 18</item>
+        <item>TYPE 19</item>
+        <item>TYPE 20</item>
+
     </array>
     <array name="price_board_types">
         <item>Select the Price Board type</item>
         <item>TYPE 1</item>
         <item>TYPE 2</item>
+        <item>TYPE 3</item>
+        <item>TYPE 4</item>
+        <item>TYPE 5</item>
+        <item>TYPE 6</item>
+        <item>TYPE 7</item>
+        <item>TYPE 8</item>
     </array>
 
     <array name="prefs_sort">

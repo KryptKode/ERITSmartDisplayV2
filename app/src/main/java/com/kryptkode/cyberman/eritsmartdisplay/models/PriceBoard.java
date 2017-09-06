@@ -71,7 +71,19 @@ public class PriceBoard extends MessageBoard {
                 return PriceBoardType.PRICE_BOARD_TYPE_ONE;
             case (2):
                 return PriceBoardType.PRICE_BOARD_TYPE_TWO;
-            case 3:
+            case (3):
+                return PriceBoardType.PRICE_BOARD_TYPE_THREE;
+            case (4):
+                return PriceBoardType.PRICE_BOARD_TYPE_FOUR;
+            case (5):
+                return PriceBoardType.PRICE_BOARD_TYPE_FIVE;
+            case (6):
+                return PriceBoardType.PRICE_BOARD_TYPE_SIX;
+            case (7):
+                return PriceBoardType.PRICE_BOARD_TYPE_SEVEN;
+            case (8):
+                return PriceBoardType.PRICE_BOARD_TYPE_EIGHT;
+            case (-1):
                 return PriceBoardType.PRICE_BOARD_TYPE_NONE;
 
             default:
@@ -96,17 +108,13 @@ public class PriceBoard extends MessageBoard {
     }
 
 
-    public MessageBoardType getPriceMessageBoardType() {
-        return super.getMessageBoardType();
-    }
-
-
-    public String getPriceMessageString() {
-        return super.getMessageString();
-    }
 
     public String createPriceSendFormat(){
         return DisplayBoardHelpers.createMessageSendFormat(this.priceValuesMap);
+    }
+
+    public String getPriceBoardCode(){
+        return DisplayBoardHelpers.generatePriceBoardCode(this.priceBoardType);
     }
 
     public String createBoardType(){
@@ -118,7 +126,13 @@ public class PriceBoard extends MessageBoard {
     public enum PriceBoardType {
         PRICE_BOARD_TYPE_ONE(1),
         PRICE_BOARD_TYPE_TWO(2),
-        PRICE_BOARD_TYPE_NONE(3);
+        PRICE_BOARD_TYPE_THREE(3),
+        PRICE_BOARD_TYPE_FOUR(4),
+        PRICE_BOARD_TYPE_FIVE(5),
+        PRICE_BOARD_TYPE_SIX(6),
+        PRICE_BOARD_TYPE_SEVEN(7),
+        PRICE_BOARD_TYPE_EIGHT(8),
+        PRICE_BOARD_TYPE_NONE(-1);
 
         private int numberOfCascades;
 

@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageView;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,7 @@ public class AboutFragment extends Fragment implements View.OnClickListener{
         eritLogoImageView = (AppCompatImageView) view .findViewById(R.id.erit_logo);
         eritWebsiteTextView = (TextView) view.findViewById(R.id.erit_site);
 
-        eritWebsiteTextView.setOnClickListener(this);
+        eritWebsiteTextView.setMovementMethod(LinkMovementMethod.getInstance());
         eritLogoImageView.setOnClickListener(this);
         return view;
     }

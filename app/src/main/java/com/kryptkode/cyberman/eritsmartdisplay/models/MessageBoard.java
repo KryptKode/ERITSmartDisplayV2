@@ -84,9 +84,15 @@ public class MessageBoard extends SmartDisplay {
         return DisplayBoardHelpers.createMessageSendFormat(this.messagesMap);
     }
 
+    public String getMessageBoardCode(){
+        return DisplayBoardHelpers.generateMesssageBoardCode(this.messageBoardType);
+    }
+
 
     public static MessageBoardType getMessageBoardTypeFromInt(int code) throws Exception {
         switch (code) {
+            case (1):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_ONE;
             case (2):
                 return MessageBoardType.MESSAGE_BOARD_TYPE_TWO;
             case (3):
@@ -95,7 +101,6 @@ public class MessageBoard extends SmartDisplay {
                 return MessageBoardType.MESSAGE_BOARD_TYPE_FOUR;
             case (5):
                 return MessageBoardType.MESSAGE_BOARD_TYPE_FIVE;
-
             case (6):
                 return MessageBoardType.MESSAGE_BOARD_TYPE_SIX;
             case (7):
@@ -106,6 +111,29 @@ public class MessageBoard extends SmartDisplay {
                 return MessageBoardType.MESSAGE_BOARD_TYPE_NINE;
             case (10):
                 return MessageBoardType.MESSAGE_BOARD_TYPE_TEN;
+            case (11):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_ELEVEN;
+            case (12):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_TWELVE;
+            case (13):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_THIRTEEN;
+            case (14):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_FOURTEEN;
+            case (15):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_FIFTEEN;
+            case (16):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_SIXTEEN;
+            case (17):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_SEVENTEEN;
+            case (18):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_EIGHTEEN;
+            case (19):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_NINETEEN;
+            case (20):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_TWENTY;
+            case (-200):
+                return MessageBoardType.MESSAGE_BOARD_TYPE_NONE;
+
             default:
                 throw new Exception("Integer " + code + " is not associated with any Message board type");
         }
@@ -121,6 +149,7 @@ public class MessageBoard extends SmartDisplay {
     }
 
     public enum MessageBoardType {
+        MESSAGE_BOARD_TYPE_ONE(1),
         MESSAGE_BOARD_TYPE_TWO(2),
         MESSAGE_BOARD_TYPE_THREE(3),
         MESSAGE_BOARD_TYPE_FOUR(4),
@@ -129,7 +158,19 @@ public class MessageBoard extends SmartDisplay {
         MESSAGE_BOARD_TYPE_SEVEN(7),
         MESSAGE_BOARD_TYPE_EIGHT(8),
         MESSAGE_BOARD_TYPE_NINE(9),
-        MESSAGE_BOARD_TYPE_TEN(10);
+        MESSAGE_BOARD_TYPE_TEN(10),
+        MESSAGE_BOARD_TYPE_ELEVEN(11),
+        MESSAGE_BOARD_TYPE_TWELVE(12),
+        MESSAGE_BOARD_TYPE_THIRTEEN(13),
+        MESSAGE_BOARD_TYPE_FOURTEEN(14),
+        MESSAGE_BOARD_TYPE_FIFTEEN(15),
+        MESSAGE_BOARD_TYPE_SIXTEEN(16),
+        MESSAGE_BOARD_TYPE_SEVENTEEN(17),
+        MESSAGE_BOARD_TYPE_EIGHTEEN(18),
+        MESSAGE_BOARD_TYPE_NINETEEN(19),
+        MESSAGE_BOARD_TYPE_TWENTY(20),
+        MESSAGE_BOARD_TYPE_NONE(-200);
+
 
         private int numberOfCascades;
 

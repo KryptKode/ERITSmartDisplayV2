@@ -29,8 +29,8 @@ public class SplashScreen extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
        hotspot = new WifiHotspot(this);
-        createHotspot();
-
+     //   createHotspot();
+        delay();
     }
 
     private void delay() {

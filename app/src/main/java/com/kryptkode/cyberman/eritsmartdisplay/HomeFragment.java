@@ -5,10 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -17,6 +19,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
+
+import com.kryptkode.cyberman.eritsmartdisplay.models.MessageBoard;
 import com.kryptkode.cyberman.eritsmartdisplay.views.EmptyRecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,7 +50,8 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
 
     private HomeFragmentListener homeFragmentListener;
     private RequestToLoad receiver;
-
+    private String sortOrderKey;
+    private boolean autoEnableHotspotIsActive;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -97,6 +102,19 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
         recyclerView.setEmptyView(emptyView);
         receiver = new RequestToLoad();
 
+        PreferenceManager.setDefaultValues(getContext(), R.xml.preferences, false);
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if (preferences.contains(getString(R.string.sort_key))) {
+
+            sortOrderKey = preferences.getString(getString(R.string.sort_key),
+                    getString(R.string.sort_default));
+            autoEnableHotspotIsActive = preferences.getBoolean(getString(R.string.auto_turn_on_wifi_key),
+                    getResources().getBoolean(R.bool.auto_turn_on_wifi));
+
+            Toast.makeText(getContext(), "Hotspot auto start: " + autoEnableHotspotIsActive, Toast.LENGTH_SHORT).show();
+        }
+
         LocalBroadcastManager.getInstance(getContext())
                 .registerReceiver(receiver, new IntentFilter(SmartDisplayService.ACTION_READ_DB));
 
@@ -113,8 +131,31 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
     public void onResume() {
         super.onResume();
         createLoader();
+        PreferenceManager.getDefaultSharedPreferences(getContext()).registerOnSharedPreferenceChangeListener(prefListener);
         Log.i(TAG, "onResume: ");
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(getContext()).unregisterOnSharedPreferenceChangeListener(prefListener);
+    }
+
+    SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (key.equals(getString(R.string.sort_key))) {
+                sortOrderKey = sharedPreferences.getString(key, getString(R.string.sort_default));
+                Log.i(TAG, "onSharedPreferenceChanged: " + sortOrderKey);
+                createLoader();
+            }else if (key.equals(getString(R.string.auto_turn_on_wifi_key))){
+                autoEnableHotspotIsActive = sharedPreferences.getBoolean(getString(R.string.auto_turn_on_wifi_key),
+                        getResources().getBoolean(R.bool.auto_turn_on_wifi));
+
+                Toast.makeText(getContext(), "Hotspot auto start: " + autoEnableHotspotIsActive, Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -131,6 +172,7 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
         if (id == R.id.action_add_filling_station_display) {
             /*intent.putExtra(AddNewDisplayActivity.EXTRA_INT, 1);
             startActivity(intent);*/
+            priceBoard.setMessageBoardType(MessageBoard.MessageBoardType.MESSAGE_BOARD_TYPE_NONE);
             EditTextDialog editTextDialog = EditTextDialog.getInstance(priceBoard, false);
             editTextDialog.setCancelable(false);
             editTextDialog.show(getChildFragmentManager(), "edit");
@@ -219,7 +261,7 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
             case DISPLAY_LOADER_ID:
                 return new AsyncTaskLoader<Cursor>(getContext()) {
                     Cursor cursor;
-
+                    String sortOrder;
                     @Override
                     protected void onStartLoading() {
                         super.onStartLoading();
@@ -234,13 +276,19 @@ public class HomeFragment extends Fragment implements HomeAdapter.HomeAdapterLis
                     @Override
                     public Cursor loadInBackground() {
                         try {
+
+                            if (sortOrderKey.equals(getString(R.string.sort_by_name))) {
+                                sortOrder = SmartDisplayContract.SmartDisplayColumns.NAME_SORT;
+                            } else {
+                                sortOrder = null;
+                            }
                             Log.i(TAG, "loadInBackground: ");
                             return getActivity().getContentResolver()
                                     .query(SmartDisplayContract.SmartDisplayColumns.DISPLAY_CONTENT_URI,
                                             null,
                                             null,
                                             null,
-                                            null);
+                                            sortOrder);
                         } catch (Exception e) {
                             Log.i(TAG, "loadInBackground: ");
                             e.printStackTrace();
